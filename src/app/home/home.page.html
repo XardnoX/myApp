@@ -1,20 +1,17 @@
-<ion-header [translucent]="true">
+<!-- src/app/home/home.page.html -->
+
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Přihlášení pomocí Microsoft účtu</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="user$ | async as user; else loggedOut">
+    <p>Vitejte, {{ user.displayName }}</p>
+    <ion-button expand="full" (click)="logout()">odhlásit se</ion-button>
+  </ng-container>
+  <ng-template #loggedOut>
+    <ion-button expand="full" (click)="login()">přihlásit se pomocí Microsoft účtu</ion-button>
+  </ng-template>
 </ion-content>
