@@ -11,6 +11,14 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'notifications',
+    loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
+    path: 'tables',
+    loadChildren: () => import('./tables/tables.module').then( m => m.TablesPageModule)
+  },
 ];
 
 @NgModule({
