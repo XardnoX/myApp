@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Počítač: 127.0.0.1
--- Vytvořeno: Stř 11. zář 2024, 11:19
+-- Vytvořeno: Čtv 12. zář 2024, 11:03
 -- Verze serveru: 10.4.32-MariaDB
 -- Verze PHP: 8.2.12
 
@@ -33,6 +33,14 @@ CREATE TABLE `notification` (
   `title` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Vypisuji data pro tabulku `notification`
+--
+
+INSERT INTO `notification` (`idnotification`, `class`, `title`) VALUES
+(1, '2021B', '4.B'),
+(2, '2021D', '4.D');
+
 -- --------------------------------------------------------
 
 --
@@ -46,9 +54,18 @@ CREATE TABLE `user` (
   `class` varchar(45) NOT NULL,
   `admin` tinyint(4) DEFAULT NULL,
   `classteacher` tinyint(4) DEFAULT NULL,
-  `list_idlist` int(11) NOT NULL,
   `notification_idnotification` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Vypisuji data pro tabulku `user`
+--
+
+INSERT INTO `user` (`iduser`, `email`, `name`, `class`, `admin`, `classteacher`, `notification_idnotification`) VALUES
+(1, 'krajan_ondrej@oauh.cz', NULL, '2021B', NULL, NULL, 1),
+(2, 'chmelarova_nicol@oauh.cz', NULL, '2021D', NULL, NULL, 2),
+(3, 'ondra.kraja@gmail.com', 'teacher', '2021B', NULL, 1, 1),
+(4, 'nowak_richard@oauh.cz', NULL, '2021B', 1, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -60,6 +77,14 @@ CREATE TABLE `user_has_widget` (
   `user_iduser` int(11) NOT NULL,
   `widget_idwidget` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Vypisuji data pro tabulku `user_has_widget`
+--
+
+INSERT INTO `user_has_widget` (`user_iduser`, `widget_idwidget`) VALUES
+(1, 1),
+(2, 2);
 
 -- --------------------------------------------------------
 
@@ -75,6 +100,14 @@ CREATE TABLE `widget` (
   `paid` tinyint(4) DEFAULT NULL,
   `notification_idnotification` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Vypisuji data pro tabulku `widget`
+--
+
+INSERT INTO `widget` (`idwidget`, `class`, `description`, `price`, `paid`, `notification_idnotification`) VALUES
+(1, '2021B', 'ISIC 2024/2025', 250, NULL, 1),
+(2, '2021D', 'ISIC 2024/2025', 250, NULL, 2);
 
 --
 -- Indexy pro exportované tabulky
@@ -116,19 +149,19 @@ ALTER TABLE `widget`
 -- AUTO_INCREMENT pro tabulku `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `idnotification` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idnotification` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pro tabulku `user`
 --
 ALTER TABLE `user`
-  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `iduser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pro tabulku `widget`
 --
 ALTER TABLE `widget`
-  MODIFY `idwidget` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idwidget` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Omezení pro exportované tabulky
