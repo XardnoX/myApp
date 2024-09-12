@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { WidgetsService } from '../services/widgets.service';
 
 @Component({
   selector: 'app-notifications',
@@ -8,8 +9,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class NotificationsPage implements OnInit {
   userClass: string | undefined;
+  widgets: any[] = [];  // Array to store widgets for the class
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private widgetsService: WidgetsService) { }
 
   ngOnInit() {
     // Retrieve the user class from the route parameters
@@ -17,18 +19,23 @@ export class NotificationsPage implements OnInit {
       const userClassParam = params.get('userClass');
       if (userClassParam) {
         this.userClass = userClassParam;
-        // You can now load notifications specific to the user's class
-        this.loadNotificationsForClass(this.userClass);
+        // Load widgets specific to the user's class
+        this.loadWidgetsForClass(this.userClass);
       } else {
         console.error('No user class found in the route parameters.');
       }
     });
   }
 
-  loadNotificationsForClass(userClass: string) {
-    // Implement your logic here to load class-specific notifications
-    console.log('Loading notifications for class:', userClass);
-    // Example: Call a service to fetch notifications based on class
-    // this.notificationsService.getNotificationsByClass(userClass).subscribe(...);
+  loadWidgetsForClass(userClass: string) {
+    console.log('Loading widgets for class:', userClass);
+
+    // Call the service to fetch widgets by class
+    this.widgetsService.getWidgetsByClass(userClass).subscribe((widgets) => {
+      this.widgets = widgets;  // Store fetched widgets
+      console.log('Widgets loaded:', this.widgets);
+    }, (error) => {
+      console.error('Error loading widgets:', error);
+    });
   }
 }
