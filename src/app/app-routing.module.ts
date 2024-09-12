@@ -12,8 +12,8 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'notifications',
-    loadChildren: () => import('./notifications/notifications.module').then( m => m.NotificationsPageModule)
+    path: 'notifications/:userClass',
+    loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsPageModule)
   },
   {
     path: 'tables',

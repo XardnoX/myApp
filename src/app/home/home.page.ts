@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -11,7 +12,8 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 export class HomePage {
   user$ = this.afAuth.authState;
 
-  constructor(private authService: AuthService, private afAuth: AngularFireAuth, private router: Router) { }
+  constructor(private authService: AuthService, private afAuth: AngularFireAuth, private router: Router
+  ) { }
 
   login() {
     this.authService.loginWithMicrosoft();
