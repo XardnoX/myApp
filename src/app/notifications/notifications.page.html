@@ -1,13 +1,25 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>notifications</ion-title>
+    <ion-title>Upozornění - {{ userClass }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">notifications</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Loop through the widgets and display each one -->
+  <ion-card *ngFor="let widget of widgets">
+    <ion-card-header>
+      <ion-card-title>{{ widget.description }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Class: {{ widget.class }}</p>
+      <p>Price: {{ widget.price }}</p>
+      <p>Paid: {{ widget.paid ? 'Yes' : 'No' }}</p>
+      <p>Notification ID: {{ widget.notification_idnotification }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Show this message if no widgets are available -->
+  <ion-item *ngIf="widgets.length === 0">
+    <p>No widgets available for this class.</p>
+  </ion-item>
 </ion-content>
