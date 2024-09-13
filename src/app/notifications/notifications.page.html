@@ -8,13 +8,12 @@
   <!-- Loop through the widgets and display each one -->
   <ion-card *ngFor="let widget of widgets">
     <ion-card-header>
-      <ion-card-title>{{ widget.description }}</ion-card-title>
+      <ion-card-title>{{ widget.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>Class: {{ widget.class }}</p>
-      <p>Price: {{ widget.price }}</p>
-      <p>Paid: {{ widget.paid ? 'Yes' : 'No' }}</p>
-      <p>Notification ID: {{ widget.notification_idnotification }}</p>
+      <p>{{ widget.description}}</p>
+      <p>Cena: {{ widget.price }} Kč</p>
+      <p>zaplaceno: {{ widget.paid ? 'Ano' : 'Ne' }}</p>
     </ion-card-content>
   </ion-card>
 
