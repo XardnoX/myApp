@@ -8,7 +8,9 @@ import { Observable } from 'rxjs';
 export class WidgetsService {
 
   constructor(private http: HttpClient) { }
-  getWidgetsByClass(userClass: string): Observable<any> {
-    return this.http.get<any[]>(`http://localhost:8100/widgets?class=${userClass}`);
+
+  // Method to get widgets by user class
+  getWidgetsByClass(userClass: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:3000/widgets?class=${userClass}`);
   }
 }

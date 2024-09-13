@@ -12,7 +12,7 @@ export class NotificationsPage implements OnInit {
   widgets: any[] = [];  // Array to store widgets for the class
 
   constructor(private route: ActivatedRoute, private widgetsService: WidgetsService) { }
-
+  
   ngOnInit() {
     // Retrieve the user class from the route parameters
     this.route.paramMap.subscribe(params => {
@@ -26,16 +26,18 @@ export class NotificationsPage implements OnInit {
       }
     });
   }
-
+  
   loadWidgetsForClass(userClass: string) {
     console.log('Loading widgets for class:', userClass);
-
+  
     // Call the service to fetch widgets by class
     this.widgetsService.getWidgetsByClass(userClass).subscribe((widgets) => {
-      this.widgets = widgets;  // Store fetched widgets
+      this.widgets = widgets; // Store fetched widgets
       console.log('Widgets loaded:', this.widgets);
     }, (error) => {
       console.error('Error loading widgets:', error);
     });
   }
+  
+
 }
