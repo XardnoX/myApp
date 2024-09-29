@@ -14,12 +14,11 @@ export class NotificationsPage implements OnInit {
   constructor(private route: ActivatedRoute, private widgetsService: WidgetsService) { }
   
   ngOnInit() {
-    // Retrieve the user class from the route parameters
     this.route.paramMap.subscribe(params => {
       const userClassParam = params.get('userClass');
+      console.log('Class from route params:', userClassParam); // Log to check value
       if (userClassParam) {
         this.userClass = userClassParam;
-        // Load widgets specific to the user's class
         this.loadWidgetsForClass(this.userClass);
       } else {
         console.error('No user class found in the route parameters.');

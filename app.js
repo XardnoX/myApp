@@ -52,5 +52,5 @@ app.get('/widgets', (req, res) => {
 // Start the backend server
 const PORT = 3306;
 app.listen(PORT, () => {
-  console.log(`Backend server is running on https://pma6.webzdarma.cz:${PORT}`);
+  console.log(`Backend server is running on http://pma6.webzdarma.cz:${PORT}`);
 });
