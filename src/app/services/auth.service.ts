@@ -14,7 +14,7 @@ export class AuthService {
   // Function to check if the user exists in the database
   checkUserInDatabase(email: string): Observable<any> {
     // Make an HTTP request to your backend API (PHP script) to check if the email exists
-    return this.http.post('http://localhost/user.php', { email });
+    return this.http.post('http://databasepokladna.euweb.cz/user.php', { email });
   }
 
   async loginWithMicrosoft() {

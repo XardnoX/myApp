@@ -11,10 +11,10 @@ app.use(express.json());
 
 // MySQL connection (replace with your actual MySQL credentials)
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'mydb'
+  host: 'sql6.webzdarma.cz',
+  user: 'databasepokl4563',
+  password: 'databasepokl4563',
+  database: 'Databasepokladna.1'
 });
 
 // Connect to the database
@@ -50,7 +50,7 @@ app.get('/widgets', (req, res) => {
 });
 
 // Start the backend server
-const PORT = 3000;
+const PORT = 3306;
 app.listen(PORT, () => {
-  console.log(`Backend server is running on http://localhost:${PORT}`);
+  console.log(`Backend server is running on https://pma6.webzdarma.cz:${PORT}`);
 });
