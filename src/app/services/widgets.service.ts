@@ -7,10 +7,29 @@ import { Observable } from 'rxjs';
 })
 export class WidgetsService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  // Method to get widgets by user class
-  getWidgetsByClass(userClass: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://sql6.webzdarma.cz:3306/widgets?class=${userClass}`);
+  // Function to get widgets by the user's class
+  getWidgetsByClass(userClass: string): Observable<any> {
+    const url = `http://databasepokladna.euweb.cz/get_widgets.php?class=${(userClass)}`;
+    console.log('Fetching widgets from URL:', url); // Log the full URL
+    return this.http.get<any>(url);
+  }
+  
+
+  // Function to handle loading of widgets and navigating to the appropriate page
+  async loadWidgetsForClass(userClass: string) {
+    try {
+      const response = await this.getWidgetsByClass(userClass).toPromise();
+      if (response && response.widgets) {
+        // Navigate or process widgets if data is found
+        console.log('Widgets loaded successfully:', response.widgets);
+        // Perform navigation or any necessary action after widgets load
+      } else {
+        console.error('No widgets found for the specified class.');
+      }
+    } catch (error) {
+      console.error('Error loading widgets:', error);
+    }
   }
 }
