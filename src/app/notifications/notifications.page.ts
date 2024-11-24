@@ -9,14 +9,19 @@ import { WidgetsService } from '../services/widgets.service';
 })
 export class NotificationsPage implements OnInit {
   userClass: string | undefined;
-  widgets: any[] = [];  // Array to store widgets for the class
+  widgets: any[] = []; // Ensure this is always an array
 
-  constructor(private route: ActivatedRoute, private widgetsService: WidgetsService) { }
-  
+  constructor(
+    private route: ActivatedRoute,
+    private widgetsService: WidgetsService
+  ) {}
+
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    // Subscribe to route parameters
+    this.route.paramMap.subscribe((params) => {
       const userClassParam = params.get('userClass');
-      console.log('Class from route params:', userClassParam); // Log to check value
+      console.log('Class from route params:', userClassParam);
+
       if (userClassParam) {
         this.userClass = userClassParam;
         this.loadWidgetsForClass(this.userClass);
@@ -25,18 +30,25 @@ export class NotificationsPage implements OnInit {
       }
     });
   }
-  
+
   loadWidgetsForClass(userClass: string) {
     console.log('Loading widgets for class:', userClass);
-  
-    // Call the service to fetch widgets by class
-    this.widgetsService.getWidgetsByClass(userClass).subscribe((widgets) => {
-      this.widgets = widgets; // Store fetched widgets
-      console.log('Widgets loaded:', this.widgets);
-    }, (error) => {
-      console.error('Error loading widgets:', error);
-    });
-  }
-  
 
+    // Call the service to fetch widgets by class
+    this.widgetsService.getWidgetsByClass(userClass).subscribe(
+      (response) => {
+        // Validate response and ensure widgets are stored as an array
+        if (response && Array.isArray(response.widgets)) {
+          this.widgets = response.widgets; // Store the widgets array
+          console.log('Widgets loaded:', this.widgets);
+        } else {
+          console.error('Invalid response format:', response);
+          this.widgets = []; // Reset widgets array if response is invalid
+        }
+      },
+      (error) => {
+        console.error('Error loading widgets:', error);
+      }
+    );
+  }
 }
