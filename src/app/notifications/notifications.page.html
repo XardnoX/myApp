@@ -13,7 +13,11 @@
     <ion-card-content>
       <p>{{ widget.description}}</p>
       <p>Cena: {{ widget.price }} Kč</p>
-      <p>zaplaceno: {{ widget.paid ? 'Ano' : 'Ne' }}</p>
+      <span *ngIf="widget.paid === 1">Ano</span>
+        <span *ngIf="widget.paid === 0">Ne</span>
+      <p>Zaplaceno: {{widget.paid}} </p>
+      <p *ngIf="widget.owe === null">Dluh: {{ widget.owe }}</p>
+    <!-- <p>zaplaceno: {{ widget.paid ? 'Ano' : 'Ne' }}</p>--> 
     </ion-card-content>
   </ion-card>
 
