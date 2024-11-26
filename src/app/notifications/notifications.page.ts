@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WidgetsService } from '../services/widgets.service';
+import { PaidService } from '../services/paid.service';
 
 @Component({
   selector: 'app-notifications',
@@ -9,11 +10,14 @@ import { WidgetsService } from '../services/widgets.service';
 })
 export class NotificationsPage implements OnInit {
   userClass: string | undefined;
-  widgets: any[] = []; // Ensure this is always an array
+  userId: number = 1; // Replace this with actual logic to fetch the logged user's ID
+  widgets: any[] = []; // Array to store widgets
+  paidInfo: any = {}; // Object to store payment information
 
   constructor(
     private route: ActivatedRoute,
-    private widgetsService: WidgetsService
+    private widgetsService: WidgetsService,
+    private paidService: PaidService
   ) {}
 
   ngOnInit() {
@@ -24,31 +28,61 @@ export class NotificationsPage implements OnInit {
 
       if (userClassParam) {
         this.userClass = userClassParam;
-        this.loadWidgetsForClass(this.userClass);
+        this.loadWidgetsAndPayments(this.userClass, this.userId);
       } else {
         console.error('No user class found in the route parameters.');
       }
     });
   }
 
-  loadWidgetsForClass(userClass: string) {
-    console.log('Loading widgets for class:', userClass);
+  loadWidgetsAndPayments(userClass: string, userId: number) {
+    console.log('Loading widgets and payment info for class:', userClass);
 
-    // Call the service to fetch widgets by class
+    // Fetch widgets for the class
     this.widgetsService.getWidgetsByClass(userClass).subscribe(
       (response) => {
-        // Validate response and ensure widgets are stored as an array
         if (response && Array.isArray(response.widgets)) {
-          this.widgets = response.widgets; // Store the widgets array
+          this.widgets = response.widgets; // Store widgets
           console.log('Widgets loaded:', this.widgets);
+
+          // Fetch payment information for the user
+          this.loadPaymentInfo(userId, userClass);
         } else {
-          console.error('Invalid response format:', response);
-          this.widgets = []; // Reset widgets array if response is invalid
+          console.error('Invalid widget response format:', response);
+          this.widgets = []; // Reset widgets array if invalid
         }
       },
       (error) => {
         console.error('Error loading widgets:', error);
       }
     );
+  }
+
+  loadPaymentInfo(userId: number, userClass: string) {
+    console.log('Fetching payment info for user:', userId);
+
+    // Fetch payment information for the user
+    this.paidService.getWidgetsByUserAndClass(userId, userClass).subscribe(
+      (response) => {
+        if (response && Array.isArray(response.widgets)) {
+          // Map the payment information to a lookup object for quick access
+          this.paidInfo = response.widgets.reduce((acc: any, widget: any) => {
+            acc[widget.idwidget] = widget.paid === 'Ano' ? 'Ano' : 'Ne';
+            return acc;
+          }, {});
+          console.log('Payment info loaded:', this.paidInfo);
+        } else {
+          console.error('Invalid payment response format:', response);
+        }
+      },
+      (error) => {
+        console.error('Error fetching payment info:', error);
+      }
+    );
+  }
+
+  // Helper method to get the payment status for a widget
+  getPaymentStatus(widgetId: number): string {
+    return this.paidInfo[widgetId] || 'Ne';
   }
 }

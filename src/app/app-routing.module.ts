@@ -19,6 +19,7 @@ const routes: Routes = [
     path: 'tables',
     loadChildren: () => import('./tables/tables.module').then( m => m.TablesPageModule)
   },
+  
 ];
 
 @NgModule({
