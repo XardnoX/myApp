@@ -1,23 +1,19 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Upozornění - {{ userClass }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+    <h1 style="margin: auto; padding-top: 10px;">Upozornění - {{ userClass }}</h1>
+    <ion-content>
+      <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.idwidget)">
+        <ion-card-header>
+          <ion-card-title>{{ widget.name }}</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
 
-<ion-content>
-  <ion-card *ngFor="let widget of widgets">
-    <ion-card-header>
-      <ion-card-title>{{ widget.name }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>{{ widget.description }}</p>
-      <p>Cena: {{ widget.price }} Kč</p>
-      <p>Zaplaceno: {{ widget.paid }}</p>
-      <p>Dluh: {{ widget.owe }}</p>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-item *ngIf="widgets.length === 0">
-    <p>No widgets available for this class.</p>
-  </ion-item>
-</ion-content>
+          <p>{{ widget.description }}</p>
+          <p>Cena: {{ widget.price }} Kč</p>
+          <p>Zaplaceno: {{ widget.paid }}</p>
+          <p *ngIf="widget.owe !== null">Dluh: {{ widget.owe }}</p>
+        </ion-card-content>
+      </ion-card>
+    
+      <ion-item *ngIf="!widgets || widgets.length === 0">
+        <p>Pro Vaši třídu nejsou k dispozici žádné upozornění.</p>
+      </ion-item>
+    </ion-content>

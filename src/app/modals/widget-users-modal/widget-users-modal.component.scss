@@ -1,0 +1,35 @@
+ion-grid {
+  border: 1px solid #2b2929;
+  text-align: center;
+}
+
+ion-row {
+  border-bottom: 1px solid #473d3d;
+  align-items: center;
+}
+.head-email {
+    padding-right: 20% ;
+    padding-left: 15% ;
+}
+ion-row.header-row ion-col {
+  font-weight: bold;
+  font-size: 14px; /* Adjust title font size */
+  text-align: center; /* Center titles */
+  color: #838383;
+}
+.email {
+    padding-right: 50px;
+    padding-left: 5px;
+}
+ion-col {
+  padding: 8px;
+  text-align: center;
+}
+
+ion-col.small-text {
+  font-size: 12px; /* Smaller text for rows */
+}
+
+ion-col:first-child {
+  text-align: left;
+}

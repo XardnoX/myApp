@@ -10,10 +10,14 @@ export class PaidService {
 
   constructor(private http: HttpClient) {}
 
-  // Fetch widgets by user ID and class
+  // spojení widgetů pomocí userId a Class
   getWidgetsByUserAndClass(userId: number): Observable<any> {
     const url = `${this.apiUrl}?userId=${userId}`;
     console.log('Fetching widgets for user and class from URL:', url);
     return this.http.get<any>(url); // Use HTTP GET to fetch data
+  }
+  getUsersByWidget(widgetId: number): Observable<any> {
+    const url = `http://databasepokladna.euweb.cz/widget_modal.php?widgetId=${widgetId}`;
+    return this.http.get<any>(url);
   }
 }
