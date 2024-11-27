@@ -9,10 +9,9 @@ import { PaidService } from '../services/paid.service';
   styleUrls: ['./notifications.page.scss'],
 })
 export class NotificationsPage implements OnInit {
-  userClass: string | undefined;
-  userId: number = 1; // Replace this with actual logic to fetch the logged user's ID
-  widgets: any[] = []; // Array to store widgets
-  paidInfo: any = {}; // Object to store payment information
+  userClass: string | undefined; // Holds the user class fetched from the route
+  userId: number | null = null; // Holds the logged-in user's ID (fetched dynamically)
+  widgets: any[] = []; // Array to store widgets with payment information
 
   constructor(
     private route: ActivatedRoute,
@@ -21,66 +20,90 @@ export class NotificationsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Subscribe to route parameters
+    // Fetch the userId from session and the userClass from the route
+    this.fetchUserIdAndLoadWidgets();
+  }
+
+  // Fetch the userId from session and load widgets
+  fetchUserIdAndLoadWidgets() {
+    // Simulating userId fetch; replace with actual logic to fetch from backend or session
+    this.userId = 1; // Example userId; replace with real fetch
+    console.log('Fetched userId:', this.userId);
+
+    // Fetch the userClass from route parameters
     this.route.paramMap.subscribe((params) => {
       const userClassParam = params.get('userClass');
-      console.log('Class from route params:', userClassParam);
-
       if (userClassParam) {
         this.userClass = userClassParam;
-        this.loadWidgetsAndPayments(this.userClass, this.userId);
+        console.log('Class from route params:', this.userClass);
+
+        // Load widgets and payment information
+        if (this.userId && this.userClass) {
+          this.loadWidgetsAndPayments(this.userClass, this.userId);
+        } else {
+          console.error('User ID or User Class is missing.');
+        }
       } else {
         console.error('No user class found in the route parameters.');
       }
     });
   }
 
+  // Load widgets for the same class and payment information
   loadWidgetsAndPayments(userClass: string, userId: number) {
-    console.log('Loading widgets and payment info for class:', userClass);
+    console.log(`Loading widgets for class "${userClass}" and payment info for user ID: ${userId}`);
 
-    // Fetch widgets for the class
+    // Fetch widgets belonging to the same class
     this.widgetsService.getWidgetsByClass(userClass).subscribe(
       (response) => {
         if (response && Array.isArray(response.widgets)) {
-          this.widgets = response.widgets; // Store widgets
-          console.log('Widgets loaded:', this.widgets);
+          console.log('Widgets loaded from service:', response.widgets);
 
-          // Fetch payment information for the user
-          this.loadPaymentInfo(userId, userClass);
+          // Initialize widgets array
+          this.widgets = response.widgets;
+
+          // Fetch payment information for each widget
+          this.loadPaymentInfo(userId);
         } else {
-          console.error('Invalid widget response format:', response);
-          this.widgets = []; // Reset widgets array if invalid
+          console.error('Invalid response format for widgets:', response);
+          this.widgets = [];
         }
       },
       (error) => {
-        console.error('Error loading widgets:', error);
+        console.error('Error fetching widgets:', error);
       }
     );
   }
 
-  loadPaymentInfo(userId: number, userClass: string) {
-    console.log('Fetching payment info for user:', userId);
+  // Fetch payment information for the widgets
+  loadPaymentInfo(userId: number) {
+    console.log(`Fetching payment information for user ID: ${userId}`);
 
-    // Fetch payment information for the user
-    this.paidService.getWidgetsByUserAndClass(userId, userClass).subscribe(
+    this.paidService.getWidgetsByUserAndClass(userId).subscribe(
       (response) => {
         if (response && Array.isArray(response.widgets)) {
-          // Map the payment information to a lookup object for quick access
-          this.paidInfo = response.widgets.reduce((acc: any, widget: any) => {
-            acc[widget.idwidget] = widget.paid === 'Ano' ? 'Ano' : 'Ne';
-            return acc;
-          }, {});
-          console.log('Payment info loaded:', this.paidInfo);
+          console.log('Payment info loaded:', response.widgets);
+
+          // Map the payment information to the corresponding widgets
+          this.widgets = this.widgets.map((widget) => {
+            const paymentInfo = response.widgets.find(
+              (p: { widget_id: any; }) => p.widget_id === widget.idwidget
+            );
+            return {
+              ...widget,
+              paid: paymentInfo ? (paymentInfo.widget_paid === 1 ? 'Ano' : 'Ne') : 'Ne',
+              owe: paymentInfo ? (paymentInfo.widget_owe === 1 ? 'Ano' : 'Ne') : 'Ne',
+            };
+          });
+
+          console.log('Updated widgets with payment info:', this.widgets);
         } else {
-          console.error('Invalid payment response format:', response);
+          console.error('Invalid response format for payment info:', response);
         }
       },
       (error) => {
-        console.error('Error fetching payment info:', error);
+        console.error('Error fetching payment information:', error);
       }
     );
   }
-
-  // Helper method to get the payment status for a widget
-
 }
