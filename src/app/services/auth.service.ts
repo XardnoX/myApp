@@ -9,7 +9,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth, private router: Router, private http: HttpClient) { }
+  private userId: number | null = null; // In-memory storage for userId
+
+  constructor(private afAuth: AngularFireAuth, private router: Router, private http: HttpClient) {}
 
   // Function to check if the user exists in the database
   checkUserInDatabase(email: string): Observable<any> {
@@ -27,18 +29,26 @@ export class AuthService {
 
         if (email) {
           // Call checkUserInDatabase to check if the email exists
-          this.checkUserInDatabase(email).subscribe((response: any) => {
-            if (response && response.exists) {
-              const userClass = response.userClass; // Assuming the backend returns the user's class
-              // Navigate to notifications page with the user's class
-              this.router.navigate([`/notifications/${userClass}`]);
-            } else {
-              console.error('Login restricted: User not found in the database.');
-              this.router.navigate(['login-restricted']);
+          this.checkUserInDatabase(email).subscribe(
+            (response: any) => {
+              if (response && response.exists) {
+                const userClass = response.userClass; // Assuming the backend returns the user's class
+                const userId = response.userId; // Assuming the backend returns the user's ID
+                this.userId = userId; // Store in memory
+                localStorage.setItem('userId', String(userId)); // Store in localStorage
+                console.log('User ID stored:', userId);
+
+                // Navigate to notifications page with the user's class
+                this.router.navigate([`/notifications/${userClass}`]);
+              } else {
+                console.error('Login restricted: User not found in the database.');
+                this.router.navigate(['login-restricted']);
+              }
+            },
+            (error) => {
+              console.error('Error checking user in database:', error);
             }
-          }, (error) => {
-            console.error('Error checking user in database:', error);
-          });
+          );
         } else {
           console.error('No email associated with the account.');
         }
@@ -48,8 +58,18 @@ export class AuthService {
     }
   }
 
+  // Function to retrieve the userId from memory or localStorage
+  getUserId(): number | null {
+    if (!this.userId) {
+      this.userId = parseInt(localStorage.getItem('userId') || '0', 10);
+    }
+    return this.userId;
+  }
+
   // Function to log the user out
   logout() {
     this.afAuth.signOut();
+    this.userId = null; // Clear the stored userId
+    localStorage.removeItem('userId'); // Remove from localStorage
   }
 }
