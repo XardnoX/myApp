@@ -5,19 +5,18 @@
 </ion-header>
 
 <ion-content>
-  <!-- Loop through the widgets and display each one -->
   <ion-card *ngFor="let widget of widgets">
     <ion-card-header>
       <ion-card-title>{{ widget.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>{{ widget.description}}</p>
+      <p>{{ widget.description }}</p>
       <p>Cena: {{ widget.price }} Kč</p>
-      <p>zaplaceno: {{ widget.paid ? 'Ano' : 'Ne' }}</p>
+      <p>Zaplaceno: {{ widget.paid }}</p>
+      <p>Dluh: {{ widget.owe }}</p>
     </ion-card-content>
   </ion-card>
 
-  <!-- Show this message if no widgets are available -->
   <ion-item *ngIf="widgets.length === 0">
     <p>No widgets available for this class.</p>
   </ion-item>
