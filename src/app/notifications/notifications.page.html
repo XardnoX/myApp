@@ -11,13 +11,10 @@
       <ion-card-title>{{ widget.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p>{{ widget.description}}</p>
+      <p>{{ widget.description }}</p>
       <p>Cena: {{ widget.price }} Kč</p>
-      <span *ngIf="widget.paid === 1">Ano</span>
-        <span *ngIf="widget.paid === 0">Ne</span>
-      <p>Zaplaceno: {{widget.paid}} </p>
-      <p *ngIf="widget.owe === null">Dluh: {{ widget.owe }}</p>
-    <!-- <p>zaplaceno: {{ widget.paid ? 'Ano' : 'Ne' }}</p>--> 
+      <p>Zaplaceno: {{ widget.paid }}</p>
+      <p *ngIf="widget.owe !== null">Dluh: {{ widget.owe }}</p>
     </ion-card-content>
   </ion-card>
 

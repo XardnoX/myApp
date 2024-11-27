@@ -82,7 +82,5 @@ export class NotificationsPage implements OnInit {
   }
 
   // Helper method to get the payment status for a widget
-  getPaymentStatus(widgetId: number): string {
-    return this.paidInfo[widgetId] || 'Ne';
-  }
+
 }

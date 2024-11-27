@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PaidService {
-  private apiUrl = 'http://databasepokladna.euweb.cz/user_has_widget.php'; // Replace with your actual API URL
+  private apiUrl = 'http://databasepokladna.euweb.cz/user_has_widget.php';
 
   constructor(private http: HttpClient) {}
 
