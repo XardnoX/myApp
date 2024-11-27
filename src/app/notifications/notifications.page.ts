@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { WidgetsService } from '../services/widgets.service';
 import { PaidService } from '../services/paid.service';
 import { AuthService } from '../services/auth.service'; // Import the AuthService to fetch the userId
+import { ModalController } from '@ionic/angular';
+import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 
 @Component({
   selector: 'app-notifications',
@@ -18,7 +20,8 @@ export class NotificationsPage implements OnInit {
     private route: ActivatedRoute,
     private widgetsService: WidgetsService,
     private paidService: PaidService,
-    private authService: AuthService // Inject the AuthService to get the userId
+    private authService: AuthService, // Inject the AuthService to get the userId
+    private modalController: ModalController
   ) {}
 
   ngOnInit() {
@@ -113,4 +116,15 @@ export class NotificationsPage implements OnInit {
       }
     );
   }
+  async openWidgetUsersModal(widgetId: number) {
+    const modal = await this.modalController.create({
+      component: WidgetUsersModalComponent, // Link to your modal component
+      componentProps: {
+        widgetId: widgetId, // Pass the widget ID to the modal
+      },
+    });
+  
+    await modal.present();
+  }
+  
 }
