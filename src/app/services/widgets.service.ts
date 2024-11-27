@@ -6,25 +6,24 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class WidgetsService {
+  private apiUrl = 'http://databasepokladna.euweb.cz/get_widgets.php'; // Replace with your actual API URL
 
   constructor(private http: HttpClient) {}
 
-  // Function to get widgets by the user's class
+  // Fetch widgets by class
   getWidgetsByClass(userClass: string): Observable<any> {
-    const url = `http://databasepokladna.euweb.cz/get_widgets.php?class=${(userClass)}`;
-    console.log('Fetching widgets from URL:', url); // Log the full URL
-    return this.http.get<any>(url);
+    const url = `${this.apiUrl}?class=${userClass}`;
+    console.log('Fetching widgets from URL:', url);
+    return this.http.get<any>(url); // Use HTTP GET to fetch data
   }
-  
 
-  // Function to handle loading of widgets and navigating to the appropriate page
-  async loadWidgetsForClass(userClass: string) {
+  // Function to load widgets and handle response
+  async loadWidgetsForClass(userClass: string): Promise<void> {
     try {
       const response = await this.getWidgetsByClass(userClass).toPromise();
       if (response && response.widgets) {
-        // Navigate or process widgets if data is found
         console.log('Widgets loaded successfully:', response.widgets);
-        // Perform navigation or any necessary action after widgets load
+        // Handle navigation or further processing here
       } else {
         console.error('No widgets found for the specified class.');
       }
