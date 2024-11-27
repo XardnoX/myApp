@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WidgetsService } from '../services/widgets.service';
 import { PaidService } from '../services/paid.service';
+import { AuthService } from '../services/auth.service'; // Import the AuthService to fetch the userId
 
 @Component({
   selector: 'app-notifications',
@@ -16,7 +17,8 @@ export class NotificationsPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private widgetsService: WidgetsService,
-    private paidService: PaidService
+    private paidService: PaidService,
+    private authService: AuthService // Inject the AuthService to get the userId
   ) {}
 
   ngOnInit() {
@@ -26,9 +28,14 @@ export class NotificationsPage implements OnInit {
 
   // Fetch the userId from session and load widgets
   fetchUserIdAndLoadWidgets() {
-    // Simulating userId fetch; replace with actual logic to fetch from backend or session
-    this.userId = 1; // Example userId; replace with real fetch
-    console.log('Fetched userId:', this.userId);
+    // Fetch the userId from the AuthService
+    this.userId = this.authService.getUserId(); // Retrieve userId from the service
+    console.log('Fetched userId from session:', this.userId);
+
+    if (!this.userId) {
+      console.error('User ID is not available. Ensure the user is logged in.');
+      return;
+    }
 
     // Fetch the userClass from route parameters
     this.route.paramMap.subscribe((params) => {
@@ -87,12 +94,12 @@ export class NotificationsPage implements OnInit {
           // Map the payment information to the corresponding widgets
           this.widgets = this.widgets.map((widget) => {
             const paymentInfo = response.widgets.find(
-              (p: { widget_id: any; }) => p.widget_id === widget.idwidget
+              (p: { widget_id: any }) => p.widget_id === widget.idwidget
             );
             return {
               ...widget,
               paid: paymentInfo ? (paymentInfo.widget_paid === 1 ? 'Ano' : 'Ne') : 'Ne',
-              owe: paymentInfo ? (paymentInfo.widget_owe === 1 ? 'Ano' : 'Ne') : 'Ne',
+              owe: paymentInfo ? (paymentInfo.widget_owe === 1 ? 'Ano' : 'Ne') : 'Ne', // Show owe if available, otherwise null
             };
           });
 
