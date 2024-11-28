@@ -13,8 +13,8 @@ ion-row {
 }
 ion-row.header-row ion-col {
   font-weight: bold;
-  font-size: 14px; /* Adjust title font size */
-  text-align: center; /* Center titles */
+  font-size: 14px;
+  text-align: center;
   color: #838383;
 }
 .email {
@@ -27,7 +27,7 @@ ion-col {
 }
 
 ion-col.small-text {
-  font-size: 12px; /* Smaller text for rows */
+  font-size: 12px;
 }
 
 ion-col:first-child {

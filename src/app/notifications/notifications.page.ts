@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WidgetsService } from '../services/widgets.service';
 import { PaidService } from '../services/paid.service';
-import { AuthService } from '../services/auth.service'; // Import the AuthService to fetch the userId
+import { AuthService } from '../services/auth.service'; 
 import { ModalController } from '@ionic/angular';
 import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 
@@ -12,9 +12,9 @@ import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-u
   styleUrls: ['./notifications.page.scss'],
 })
 export class NotificationsPage implements OnInit {
-  userClass: string | undefined; // Holds the user class fetched from the route
-  userId: number | null = null; // Holds the logged-in user's ID (fetched dynamically)
-  widgets: any[] = []; // Array to store widgets with payment information
+  userClass: string | undefined;
+  userId: number | null = null; 
+  widgets: any[] = []; // pole, které obsahuje widgety a podrobnosti a zaplacení
 
   constructor(
     private route: ActivatedRoute,
@@ -25,14 +25,12 @@ export class NotificationsPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Fetch the userId from session and the userClass from the route
     this.fetchUserIdAndLoadWidgets();
   }
 
-  // Fetch the userId from session and load widgets
+  // spojení userId ze session a načte widgety
   fetchUserIdAndLoadWidgets() {
-    // Fetch the userId from the AuthService
-    this.userId = this.authService.getUserId(); // Retrieve userId from the service
+    this.userId = this.authService.getUserId(); 
     console.log('Fetched userId from session:', this.userId);
 
     if (!this.userId) {
@@ -40,14 +38,13 @@ export class NotificationsPage implements OnInit {
       return;
     }
 
-    // Fetch the userClass from route parameters
     this.route.paramMap.subscribe((params) => {
       const userClassParam = params.get('userClass');
       if (userClassParam) {
         this.userClass = userClassParam;
         console.log('Class from route params:', this.userClass);
 
-        // Load widgets and payment information
+        // načte widgety a podrobnosti o zaplacení
         if (this.userId && this.userClass) {
           this.loadWidgetsAndPayments(this.userClass, this.userId);
         } else {
@@ -59,20 +56,18 @@ export class NotificationsPage implements OnInit {
     });
   }
 
-  // Load widgets for the same class and payment information
+  // načte widgety ze stejné userClass
   loadWidgetsAndPayments(userClass: string, userId: number) {
     console.log(`Loading widgets for class "${userClass}" and payment info for user ID: ${userId}`);
 
-    // Fetch widgets belonging to the same class
     this.widgetsService.getWidgetsByClass(userClass).subscribe(
       (response) => {
         if (response && Array.isArray(response.widgets)) {
           console.log('Widgets loaded from service:', response.widgets);
 
-          // Initialize widgets array
+        
           this.widgets = response.widgets;
 
-          // Fetch payment information for each widget
           this.loadPaymentInfo(userId);
         } else {
           console.error('Invalid response format for widgets:', response);
@@ -85,7 +80,6 @@ export class NotificationsPage implements OnInit {
     );
   }
 
-  // Fetch payment information for the widgets
   loadPaymentInfo(userId: number) {
     console.log(`Fetching payment information for user ID: ${userId}`);
 
@@ -94,7 +88,6 @@ export class NotificationsPage implements OnInit {
         if (response && Array.isArray(response.widgets)) {
           console.log('Payment info loaded:', response.widgets);
 
-          // Map the payment information to the corresponding widgets
           this.widgets = this.widgets.map((widget) => {
             const paymentInfo = response.widgets.find(
               (p: { widget_id: any }) => p.widget_id === widget.idwidget
@@ -102,7 +95,7 @@ export class NotificationsPage implements OnInit {
             return {
               ...widget,
               paid: paymentInfo ? (paymentInfo.widget_paid === 1 ? 'Ano' : 'Ne') : 'Ne',
-              owe: paymentInfo ? (paymentInfo.widget_owe === 1 ? 'Ano' : 'Ne') : 'Ne', // Show owe if available, otherwise null
+              owe: paymentInfo ? (paymentInfo.widget_owe === 1 ? 'Ano' : 'Ne') : 'Ne',
             };
           });
 
@@ -118,9 +111,9 @@ export class NotificationsPage implements OnInit {
   }
   async openWidgetUsersModal(widgetId: number) {
     const modal = await this.modalController.create({
-      component: WidgetUsersModalComponent, // Link to your modal component
+      component: WidgetUsersModalComponent,
       componentProps: {
-        widgetId: widgetId, // Pass the widget ID to the modal
+        widgetId: widgetId, // předá widgetId modalu
       },
     });
   
