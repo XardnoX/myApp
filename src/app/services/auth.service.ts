@@ -9,13 +9,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private userId: number | null = null; // In-memory storage for userId
+  private userId: number | null = null; // uložení userId do paměti
 
   constructor(private afAuth: AngularFireAuth, private router: Router, private http: HttpClient) {}
 
-  // Function to check if the user exists in the database
+  // funkce na ověření jeslti uživatel existuje
   checkUserInDatabase(email: string): Observable<any> {
-    // Make an HTTP request to your backend API (PHP script) to check if the email exists
+    // request na backend API pro kontrolu jestli email existuje
     return this.http.post('http://databasepokladna.euweb.cz/user.php', { email });
   }
 
@@ -28,17 +28,17 @@ export class AuthService {
         const email = result.user.email;
 
         if (email) {
-          // Call checkUserInDatabase to check if the email exists
+          // zavolání checkUserInDatabase
           this.checkUserInDatabase(email).subscribe(
             (response: any) => {
               if (response && response.exists) {
-                const userClass = response.userClass; // Assuming the backend returns the user's class
-                const userId = response.userId; // Assuming the backend returns the user's ID
-                this.userId = userId; // Store in memory
-                localStorage.setItem('userId', String(userId)); // Store in localStorage
+                const userClass = response.userClass; // předpoklad, že backend vrátí userClass
+                const userId = response.userId; // předpoklad, že backend vrátí userId
+                this.userId = userId; 
+                localStorage.setItem('userId', String(userId)); // uložení do lokální paměti
                 console.log('User ID stored:', userId);
 
-                // Navigate to notifications page with the user's class
+                // přesměruje na stránku notification/(userClass)
                 this.router.navigate([`/notifications/${userClass}`]);
               } else {
                 console.error('Login restricted: User not found in the database.');
@@ -58,7 +58,7 @@ export class AuthService {
     }
   }
 
-  // Function to retrieve the userId from memory or localStorage
+  // funkce která vrátí userId z lokální paměti
   getUserId(): number | null {
     if (!this.userId) {
       this.userId = parseInt(localStorage.getItem('userId') || '0', 10);
@@ -66,10 +66,10 @@ export class AuthService {
     return this.userId;
   }
 
-  // Function to log the user out
+  // funkce, která odhlásí uživatele
   logout() {
     this.afAuth.signOut();
-    this.userId = null; // Clear the stored userId
-    localStorage.removeItem('userId'); // Remove from localStorage
+    this.userId = null; // uvolnění userId z paměti
+    localStorage.removeItem('userId'); // odstranění userId z paměti
   }
 }

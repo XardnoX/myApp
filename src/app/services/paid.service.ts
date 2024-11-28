@@ -14,7 +14,7 @@ export class PaidService {
   getWidgetsByUserAndClass(userId: number): Observable<any> {
     const url = `${this.apiUrl}?userId=${userId}`;
     console.log('Fetching widgets for user and class from URL:', url);
-    return this.http.get<any>(url); // Use HTTP GET to fetch data
+    return this.http.get<any>(url); 
   }
   getUsersByWidget(widgetId: number): Observable<any> {
     const url = `http://databasepokladna.euweb.cz/widget_modal.php?widgetId=${widgetId}`;

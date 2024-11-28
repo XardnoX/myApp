@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql');
-const path = require('path'); // Required for serving static files
+const path = require('path'); 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// MySQL connection (use correct credentials)
+// MySQL connection 
 const connection = mysql.createConnection({
   host: 'sql6.webzdarma.cz',
   user: 'databasepokl4563',
@@ -23,12 +23,10 @@ connection.connect((err) => {
   }
   console.log('Connected to MySQL database');
 });
-
-// Serve static files (for Angular app build)
+ 
 const frontendBuildPath = path.join('D:/projekty/ionic/myApp/www');
 app.use(express.static(frontendBuildPath));
 
-// MIME type correction for .js files (optional but usually not required)
 app.use((req, res, next) => {
   if (req.url.endsWith('.js')) {
     res.setHeader('Content-Type', 'application/javascript');
