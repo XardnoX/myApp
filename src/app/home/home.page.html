@@ -5,11 +5,12 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ng-container *ngIf="user$ | async as user; else loggedOut">
-    <p>Vitejte, {{ user.displayName }}</p>
-    <ion-button expand="full" (click)="logout()">odhlásit</ion-button>
+  <ng-container *ngIf="authService.getUserId(); else loggedOut">
+    <p>Vítejte!</p>
+    <ion-button expand="full" (click)="logout()">Odhlásit</ion-button>
   </ng-container>
+
   <ng-template #loggedOut>
-    <ion-button expand="full" (click)="login()">přihlásit se pomocí Microsoft účtu</ion-button>
+    <ion-button expand="full" (click)="login()">Přihlásit se pomocí Microsoft účtu</ion-button>
   </ng-template>
 </ion-content>

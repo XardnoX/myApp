@@ -1,23 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
-
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root',
 })
 export class PaidService {
-  private apiUrl = 'http://databasepokladna.euweb.cz/user_has_widget.php';
+  private apiUrl = 'http://localhost:8100';
+  constructor(private firestore: AngularFirestore, private http: HttpClient) {}
 
-  constructor(private http: HttpClient) {}
+  // Get widgets for a specific user and class from Firestore
+  getWidgetsByUserAndClass(userId: string, userClass: string): Observable<any[]> {
+    const widgetsRef = this.firestore.collection('widgets', ref => 
+      ref.where('class', '==', userClass).where('userId', '==', userId)
+    );
 
-  // spojení widgetů pomocí userId a Class
-  getWidgetsByUserAndClass(userId: number): Observable<any> {
-    const url = `${this.apiUrl}?userId=${userId}`;
-    console.log('Fetching widgets for user and class from URL:', url);
-    return this.http.get<any>(url); // Use HTTP GET to fetch data
+    return widgetsRef.valueChanges(); // Fetch widgets for user and class from Firestore
   }
-  getUsersByWidget(widgetId: number): Observable<any> {
-    const url = `http://databasepokladna.euweb.cz/widget_modal.php?widgetId=${widgetId}`;
-    return this.http.get<any>(url);
+
+  // Get users assigned to a specific widget from Firestore
+  getUsersByWidget(widgetId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/payments?widgetId=${widgetId}`);
+
+
+  }
+  getWidgetsByClass(userClass: string): Observable<any[]> {
+    return this.firestore.collection('widgets', (ref) =>
+      ref.where('class', '==', userClass)
+    ).valueChanges();
   }
 }

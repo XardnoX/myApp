@@ -1,75 +1,92 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private userId: number | null = null; // In-memory storage for userId
+  private userId: string | null = null; // Stores the Firestore document ID of the logged-in user
 
-  constructor(private afAuth: AngularFireAuth, private router: Router, private http: HttpClient) {}
-
-  // Function to check if the user exists in the database
-  checkUserInDatabase(email: string): Observable<any> {
-    // Make an HTTP request to your backend API (PHP script) to check if the email exists
-    return this.http.post('http://databasepokladna.euweb.cz/user.php', { email });
-  }
+  constructor(
+    private afAuth: AngularFireAuth,
+    private firestore: AngularFirestore,
+    private router: Router
+  ) {}
 
   async loginWithMicrosoft() {
     const provider = new firebase.auth.OAuthProvider('microsoft.com');
 
     try {
+      // Sign in with Microsoft provider
       const result = await this.afAuth.signInWithPopup(provider);
+
       if (result.user) {
         const email = result.user.email;
 
         if (email) {
-          // Call checkUserInDatabase to check if the email exists
-          this.checkUserInDatabase(email).subscribe(
-            (response: any) => {
-              if (response && response.exists) {
-                const userClass = response.userClass; // Assuming the backend returns the user's class
-                const userId = response.userId; // Assuming the backend returns the user's ID
-                this.userId = userId; // Store in memory
-                localStorage.setItem('userId', String(userId)); // Store in localStorage
-                console.log('User ID stored:', userId);
+          // Check if the user exists in Firestore by email
+          const userSnapshot = await this.firestore
+            .collection('users', (ref) => ref.where('email', '==', email))
+            .get()
+            .toPromise();
 
-                // Navigate to notifications page with the user's class
-                this.router.navigate([`/notifications/${userClass}`]);
-              } else {
-                console.error('Login restricted: User not found in the database.');
-                this.router.navigate(['login-restricted']);
-              }
-            },
-            (error) => {
-              console.error('Error checking user in database:', error);
-            }
-          );
+          if (userSnapshot && !userSnapshot.empty) {
+            // Extract user ID and class from the matching document
+            const userDoc = userSnapshot.docs[0];
+            const userData = userDoc.data() as { class: string };
+            this.userId = userDoc.id;
+
+            // Store the user ID in localStorage for persistence
+            localStorage.setItem('userId', this.userId);
+
+            // Redirect the user to /notifications/(class)
+            const userClass = userData.class;
+            this.router.navigate([`/notifications/${userClass}`]);
+          } else {
+            console.error('User not found in Firestore.');
+            // Handle case where the user does not exist in Firestore
+          }
         } else {
-          console.error('No email associated with the account.');
+          console.error('No email found for the logged-in user.');
         }
       }
     } catch (error) {
-      console.error('Microsoft login error:', error);
+      console.error('Error during Microsoft login:', error);
     }
   }
-
-  // Function to retrieve the userId from memory or localStorage
-  getUserId(): number | null {
-    if (!this.userId) {
-      this.userId = parseInt(localStorage.getItem('userId') || '0', 10);
+  getUserClass(): Promise<string | null> {
+    const userId = this.getUserId();
+    if (!userId) {
+      return Promise.resolve(null);
     }
-    return this.userId;
+  
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .get()
+      .toPromise()
+      .then((doc) => {
+        if (doc && doc.exists) {
+          const userData = doc.data() as { class: string };
+          return userData.class;
+        }
+        return null;
+      });
   }
-
-  // Function to log the user out
   logout() {
     this.afAuth.signOut();
-    this.userId = null; // Clear the stored userId
-    localStorage.removeItem('userId'); // Remove from localStorage
+    this.userId = null;
+    localStorage.removeItem('userId');
+    this.router.navigate(['/home']);
+  }
+
+  getUserId(): string | null {
+    if (!this.userId) {
+      this.userId = localStorage.getItem('userId');
+    }
+    return this.userId;
   }
 }

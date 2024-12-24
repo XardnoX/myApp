@@ -1,19 +1,13 @@
-// src/app/home/home.page.ts
-import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-
 
 @Component({
   selector: 'app-home',
-  templateUrl: 'home.page.html',
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
 })
 export class HomePage {
-  user$ = this.afAuth.authState;
-
-  constructor(private authService: AuthService, private afAuth: AngularFireAuth, private router: Router
-  ) { }
+  constructor(public authService: AuthService) {}
 
   login() {
     this.authService.loginWithMicrosoft();

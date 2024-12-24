@@ -1,26 +1,26 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PaidService } from '../../services/paid.service';
 import { ModalController } from '@ionic/angular';
- 
+
 @Component({
   selector: 'app-widget-users-modal',
   templateUrl: './widget-users-modal.component.html',
   styleUrls: ['./widget-users-modal.component.scss'],
 })
 export class WidgetUsersModalComponent implements OnInit {
-  @Input() widgetId: number | null = null; // získání widgetid
-  users: any[] = []; // Pole pro ukložení uživatelů
+  @Input() widgetId: string | null = null; // The ID of the widget
+  users: any[] = []; // Array to store user payment information
 
   constructor(
     private paidService: PaidService,
-    private modalController: ModalController  
+    private modalController: ModalController
   ) {}
 
-  loadUsersForWidget(widgetId: number) {
+  loadUsersForWidget(widgetId: string) {
     this.paidService.getUsersByWidget(widgetId).subscribe(
-      (response: { users: any[] }) => {
-        if (response && Array.isArray(response.users)) {
-          this.users = response.users;
+      (response: any[]) => {
+        if (response && Array.isArray(response)) {
+          this.users = response;
         }
       },
       (error: any) => {
@@ -28,11 +28,13 @@ export class WidgetUsersModalComponent implements OnInit {
       }
     );
   }
- ngOnInit() {
+
+  ngOnInit() {
     if (this.widgetId) {
       this.loadUsersForWidget(this.widgetId);
     }
   }
+
   dismissModal() {
     this.modalController.dismiss();
   }

@@ -11,15 +11,16 @@
   <ion-grid>
     <ion-row class="header-row">
       <ion-col class="head-email">Email</ion-col>
-      <ion-col>zaplaceno</ion-col>
-      <ion-col>dluh</ion-col>
+      <ion-col>Zaplaceno</ion-col>
+      <ion-col>Dluh</ion-col>
     </ion-row>
 
     <ion-row *ngFor="let user of users">
       <ion-col class="email">{{ user.email }}</ion-col>
       <ion-col
         class="small-text"
-        [style.background-color]="user.paid ? '#006600' : 'inherit'">
+        [style.background-color]="user.paid ? '#006600' : 'inherit'"
+      >
         {{ user.paid ? 'Ano' : 'Ne' }}
       </ion-col>
       <ion-col

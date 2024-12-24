@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-//import { DatabaseService } from './services/database.service';
+import { Component, OnInit } from '@angular/core';
+import { FirestoreService } from './services/firestore.service';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
@@ -7,15 +7,17 @@ import { SplashScreen } from '@capacitor/splash-screen';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
-  constructor(
-    //private database: DatabaseService
-    ) {
-    this.initApp();
-  }
+export class AppComponent implements OnInit {
+  users: any[] = [];
 
-  async initApp(){
- //   await this.database.initializPlugin();
- //   SplashScreen.hide();
+  constructor(private firestoreService: FirestoreService) {}
+
+  ngOnInit() {
+    // Fetch users
+    this.firestoreService.getUsers().subscribe((data) => {
+      this.users = data;
+      console.log('Users:', this.users);
+    });
+
   }
 }
