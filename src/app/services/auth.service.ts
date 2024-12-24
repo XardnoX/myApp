@@ -39,15 +39,15 @@ export class AuthService {
             const userData = userDoc.data() as { class: string };
             this.userId = userDoc.id;
 
-            // Store the user ID in localStorage for persistence
+            // Store the user ID and class in localStorage for persistence
             localStorage.setItem('userId', this.userId);
+            localStorage.setItem('userClass', userData.class);
 
             // Redirect the user to /notifications/(class)
             const userClass = userData.class;
             this.router.navigate([`/notifications/${userClass}`]);
           } else {
             console.error('User not found in Firestore.');
-            // Handle case where the user does not exist in Firestore
           }
         } else {
           console.error('No email found for the logged-in user.');
@@ -57,12 +57,20 @@ export class AuthService {
       console.error('Error during Microsoft login:', error);
     }
   }
+
   getUserClass(): Promise<string | null> {
+    // Check if userClass is available in localStorage
+    const userClass = localStorage.getItem('userClass');
+    if (userClass) {
+      return Promise.resolve(userClass);
+    }
+
+    // If not in localStorage, fetch it from Firestore
     const userId = this.getUserId();
     if (!userId) {
       return Promise.resolve(null);
     }
-  
+
     return this.firestore
       .collection('users')
       .doc(userId)
@@ -71,15 +79,18 @@ export class AuthService {
       .then((doc) => {
         if (doc && doc.exists) {
           const userData = doc.data() as { class: string };
+          localStorage.setItem('userClass', userData.class); // Cache in localStorage
           return userData.class;
         }
         return null;
       });
   }
+
   logout() {
     this.afAuth.signOut();
     this.userId = null;
     localStorage.removeItem('userId');
+    localStorage.removeItem('userClass'); // Remove userClass from localStorage
     this.router.navigate(['/home']);
   }
 

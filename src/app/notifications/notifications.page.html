@@ -5,19 +5,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.idwidget)">
+  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)">
     <ion-card-header>
       <ion-card-title>{{ widget.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <p>{{ widget.description }}</p>
-      <p>Cena: {{ widget.price }} Kč</p>
-      <p>Zaplaceno: {{ widget.paid }}</p>
-      <p *ngIf="widget.owe !== null">Dluh: {{ widget.owe }}</p>
+      <p><strong>Cena:</strong> {{ widget.price }} Kč</p>
+      <p><strong>Zaplaceno:</strong> {{ widget.paid ? 'Ano' : 'Ne' }}</p>
+      <p><strong>Dluh:</strong> {{ widget.owe ? 'Ano' : 'Ne' }}</p>
     </ion-card-content>
   </ion-card>
 
   <ion-item *ngIf="!widgets || widgets.length === 0">
-    <p>Pro Vaši třídu nejsou k dispozici žádné upozornění.</p>
+    <ion-label>Pro Vaši třídu nejsou k dispozici žádné upozornění.</ion-label>
   </ion-item>
 </ion-content>
