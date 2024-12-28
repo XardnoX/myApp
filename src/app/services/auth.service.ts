@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import firebase from 'firebase/compat/app';
+import { getAuth, signInWithPopup, OAuthProvider } from 'firebase/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -17,11 +17,12 @@ export class AuthService {
   ) {}
 
   async loginWithMicrosoft() {
-    const provider = new firebase.auth.OAuthProvider('microsoft.com');
-
     try {
-      // Sign in with Microsoft provider
-      const result = await this.afAuth.signInWithPopup(provider);
+      const auth = getAuth(); // Use modular SDK to initialize Auth
+      const provider = new OAuthProvider('microsoft.com'); // Initialize Microsoft OAuthProvider
+
+      // Perform sign-in with Microsoft provider
+      const result = await signInWithPopup(auth, provider);
 
       if (result.user) {
         const email = result.user.email;
@@ -55,6 +56,9 @@ export class AuthService {
       }
     } catch (error) {
       console.error('Error during Microsoft login:', error);
+      if (error instanceof Error) {
+        alert(`Authentication Error: ${error.message}`);
+      }
     }
   }
 
@@ -87,11 +91,13 @@ export class AuthService {
   }
 
   logout() {
-    this.afAuth.signOut();
-    this.userId = null;
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userClass'); // Remove userClass from localStorage
-    this.router.navigate(['/home']);
+    const auth = getAuth(); // Use modular SDK for sign-out
+    auth.signOut().then(() => {
+      this.userId = null;
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userClass'); // Remove userClass from localStorage
+      this.router.navigate(['/home']);
+    });
   }
 
   getUserId(): string | null {
