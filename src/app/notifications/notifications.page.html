@@ -1,4 +1,20 @@
-<ion-content class="ion-padding">
+<ion-header>
+  <ion-toolbar>
+    <!-- Title centered at the top -->
+    <ion-title class="center-title">Oznámení pro třídu: {{userClass}}</ion-title>
+
+    <!-- Dropdown icon in the top-right corner -->
+    <ion-buttons slot="end">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="main-content" class="ion-padding">
   <!-- Widget Cards -->
   <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)">
     <ion-card-header>
@@ -17,3 +33,20 @@
     <ion-label>Pro Vaši třídu nejsou k dispozici žádné upozornění.</ion-label>
   </ion-item>
 </ion-content>
+
+<!-- Dropdown menu -->
+<ion-menu side="end" content-id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item button (click)="logout()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Odhlásit</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>

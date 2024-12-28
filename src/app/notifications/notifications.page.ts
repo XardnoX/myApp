@@ -1,9 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { PaidService } from '../services/paid.service';
 import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 import { AuthService } from '../services/auth.service';
-
+import { WidgetsService } from '../services/widgets.service';
+interface UserWidgetData {
+  paid: boolean;
+  owe: boolean;
+}
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',
@@ -16,42 +20,45 @@ export class NotificationsPage implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private firestore: AngularFirestore,
-    private authService: AuthService
+    private paidService: PaidService,
+    private authService: AuthService,
+    private widgetsService: WidgetsService
   ) {}
 
   async ngOnInit() {
     try {
-      // Fetch userClass and userId from AuthService
-      this.userId = this.authService.getUserId();
-      const userClass = await this.authService.getUserClass();
-
-      if (userClass && this.userId) {
-        this.userClass = userClass;
-        this.loadWidgetsForClass(userClass);
-      } else {
-        console.error('User class or user ID not found.');
+      // Retrieve userId and userClass from localStorage
+      this.userId = localStorage.getItem('userId');
+      this.userClass = localStorage.getItem('userClass') ?? undefined;
+  
+      if (!this.userId) {
+        console.error('User ID not found in localStorage.');
+        return;
       }
+  
+      if (!this.userClass) {
+        console.error('User class not found in localStorage.');
+        return;
+      }
+  
+      // Load widgets for the userClass
+      this.loadWidgetsForClass(this.userClass);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error initializing NotificationsPage:', error);
     }
   }
+  
+  
 
   loadWidgetsForClass(userClass: string) {
-    // Fetch widgets where the class matches the user's class
-    this.firestore
-      .collection('widgets', (ref) => ref.where('class', '==', userClass))
-      .snapshotChanges()
+    this.paidService
+      .getWidgetsByClass(userClass)
       .subscribe(
         async (allWidgets: any[]) => {
-          const widgetData = allWidgets.map((w) => ({
-            id: w.payload.doc.id,
-            ...(w.payload.doc.data() as {}),
-          }));
+          console.log('Fetched Widgets:', allWidgets);
 
-          // Merge user_has_widgets data for each widget
           if (this.userId) {
-            this.widgets = await this.mergeUserWidgetData(widgetData);
+            this.widgets = await this.mergeUserWidgetData(allWidgets);
           }
         },
         (error) => {
@@ -60,54 +67,52 @@ export class NotificationsPage implements OnInit {
       );
   }
 
-  async mergeUserWidgetData(widgets: any[]) {
-    const mergedWidgets = [];
-    for (const widget of widgets) {
-      const widgetId = `/widgets/${widget.id}`;
-      const userId = `/users/${this.userId}`;
-      console.log('Querying for Widget ID:', widgetId);
-      console.log('Querying for User ID:', userId);
+  async mergeUserWidgetData(widgets: any[]): Promise<any[]> {
+    try {
+      console.log('Widgets passed to mergeUserWidgetData:', widgets);
   
-      const userWidgetSnapshot = await this.firestore
-        .collection('user_has_widgets', (ref) =>
-          ref.where('widget_id', '==', widgetId).where('user_id', '==', userId)
-        )
-        .get()
-        .toPromise();
-  
-      let paid = widget.paid;
-      let owe = widget.owe;
-  
-      if (userWidgetSnapshot && !userWidgetSnapshot.empty) {
-        console.log('User Widget Snapshot Found:', userWidgetSnapshot.docs);
-  
-        const userWidget = userWidgetSnapshot.docs[0].data() as {
-          paid: boolean;
-          owe: boolean;
-        };
-  
-        console.log('User Widget Data:', userWidget);
-  
-        paid = userWidget.paid;
-        owe = userWidget.owe;
-      } else {
-        console.warn(`No matching user-widget record found for Widget ID: ${widgetId} ${userId}`);
+      if (!this.userId) {
+        console.warn('User ID is missing. Skipping merge.');
+        return widgets.map((widget) => ({ ...widget, paid: false, owe: false }));
       }
   
-      mergedWidgets.push({
-        ...widget,
-        paid,
-        owe,
-      });
+      const mergedWidgets = await Promise.all(
+        widgets.map(async (widget) => {
+          try {
+            const widgetId = widget.id;
+            console.log(`Fetching data for Widget ID: ${widgetId} and User ID: ${this.userId}`);
+  
+            const userWidgetData = await this.widgetsService.getUserWidgetData(this.userId!, widgetId);
+  
+            console.log('User Widget Data:', userWidgetData);
+  
+            // Merge the user-widget data with the widget data
+            return {
+              ...widget,
+              paid: userWidgetData?.paid ?? false,
+              owe: userWidgetData?.owe ?? false,
+            };
+          } catch (error) {
+            console.error(`Error fetching data for widget ID: ${widget.id}`, error);
+            return {
+              ...widget,
+              paid: false,
+              owe: false, // Defaults if error occurs
+            };
+          }
+        })
+      );
+  
+      console.log('Final Merged Widgets:', mergedWidgets);
+      return mergedWidgets;
+    } catch (error) {
+      console.error('Error in mergeUserWidgetData:', error);
+      return widgets.map((widget) => ({ ...widget, paid: false, owe: false }));
     }
-  
-    console.log('Final Merged Widgets:', mergedWidgets);
-    return mergedWidgets;
   }
-  
-  
-  
-  
+  logout() {
+    this.authService.logout();
+  }
   async openWidgetUsersModal(widgetId: string) {
     const modal = await this.modalController.create({
       component: WidgetUsersModalComponent,
