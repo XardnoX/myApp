@@ -12,11 +12,13 @@ export class FirestoreService {
   getUsers(): Observable<any[]> {
     return this.firestore.collection('users').valueChanges({ idField: 'id' });
   }
+  
 
   // Get all widgets
   getAllWidgets(): Observable<any[]> {
     return this.firestore.collection('widgets').valueChanges({ idField: 'id' });
   }
+  
 
   // Get all notifications
   getNotificationsByClass(userClass: string): Observable<any[]> {
@@ -24,6 +26,7 @@ export class FirestoreService {
       ref.where('class', '==', userClass)
     ).valueChanges();
   }
+  
 
   // Get user_has_widget data
   getUserWidgets(userId: string): Observable<any[]> {
@@ -31,9 +34,11 @@ export class FirestoreService {
       ref.where('user_id', '==', `/users/${userId}`)
     ).valueChanges();
   }
+  
   getUsersByClass(userClass: string): Observable<any[]> {
     return this.firestore.collection('users', (ref) =>
       ref.where('class', '==', userClass)
     ).valueChanges();
   }
+  
 }
