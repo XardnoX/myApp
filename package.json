@@ -36,7 +36,7 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "firebase": "^10.14.1",
+    "firebase": "^11.1.0",
     "firebase-admin": "^13.0.1",
     "ionicons": "^7.0.0",
     "mysql": "^2.18.1",
