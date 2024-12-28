@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { getAuth, signInWithPopup, OAuthProvider } from 'firebase/auth';
@@ -11,7 +10,6 @@ export class AuthService {
   private userId: string | null = null; // Stores the Firestore document ID of the logged-in user
 
   constructor(
-    private afAuth: AngularFireAuth,
     private firestore: AngularFirestore,
     private router: Router
   ) {}
@@ -19,39 +17,47 @@ export class AuthService {
   async loginWithMicrosoft() {
     try {
       const auth = getAuth(); // Use modular SDK to initialize Auth
-      const provider = new OAuthProvider('microsoft.com'); // Initialize Microsoft OAuthProvider
-
+      const provider = new OAuthProvider('microsoft.com');
+  
+      // Request additional scopes (if needed)
+      provider.setCustomParameters({
+        prompt: 'select_account', // Ensures the user is prompted to select an account
+      });
+  
       // Perform sign-in with Microsoft provider
       const result = await signInWithPopup(auth, provider);
-
+  
       if (result.user) {
+        const token = await result.user.getIdToken(); // Ensure the user is authenticated
+        console.log('Firebase Auth Token:', token);
+  
         const email = result.user.email;
-
-        if (email) {
-          // Check if the user exists in Firestore by email
+        if (email) {  
           const userSnapshot = await this.firestore
             .collection('users', (ref) => ref.where('email', '==', email))
             .get()
             .toPromise();
-
+  
           if (userSnapshot && !userSnapshot.empty) {
             // Extract user ID and class from the matching document
             const userDoc = userSnapshot.docs[0];
             const userData = userDoc.data() as { class: string };
             this.userId = userDoc.id;
-
+  
             // Store the user ID and class in localStorage for persistence
             localStorage.setItem('userId', this.userId);
             localStorage.setItem('userClass', userData.class);
-
+  
             // Redirect the user to /notifications/(class)
             const userClass = userData.class;
             this.router.navigate([`/notifications/${userClass}`]);
           } else {
             console.error('User not found in Firestore.');
+            alert('User not found in Firestore.');
           }
         } else {
           console.error('No email found for the logged-in user.');
+          alert('No email found for the logged-in user.');
         }
       }
     } catch (error) {
@@ -61,6 +67,7 @@ export class AuthService {
       }
     }
   }
+  
 
   getUserClass(): Promise<string | null> {
     // Check if userClass is available in localStorage
