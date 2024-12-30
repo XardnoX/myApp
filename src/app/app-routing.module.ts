@@ -18,7 +18,11 @@ const routes: Routes = [
   {
     path: 'tables',
     loadChildren: () => import('./tables/tables.module').then( m => m.TablesPageModule)
+  },  {
+    path: 'add-widget',
+    loadChildren: () => import('./add-widget/add-widget.module').then( m => m.AddWidgetPageModule)
   },
+
   
 ];
 

@@ -4,6 +4,7 @@ import { PaidService } from '../services/paid.service';
 import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 import { AuthService } from '../services/auth.service';
 import { WidgetsService } from '../services/widgets.service';
+import { Router } from '@angular/router';
 interface UserWidgetData {
   paid: boolean;
   owe: boolean;
@@ -22,7 +23,8 @@ export class NotificationsPage implements OnInit {
     private modalController: ModalController,
     private paidService: PaidService,
     private authService: AuthService,
-    private widgetsService: WidgetsService
+    private widgetsService: WidgetsService,
+    public router: Router ,
   ) {}
 
   async ngOnInit() {
@@ -103,7 +105,7 @@ export class NotificationsPage implements OnInit {
         })
       );
   
-      console.log('Final Merged Widgets:', mergedWidgets);
+     
       return mergedWidgets;
     } catch (error) {
       console.error('Error in mergeUserWidgetData:', error);

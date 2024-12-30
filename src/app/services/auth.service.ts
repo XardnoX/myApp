@@ -29,7 +29,7 @@ export class AuthService {
   
       if (result.user) {
         const token = await result.user.getIdToken(); // Ensure the user is authenticated
-        console.log('Firebase Auth Token:', token);
+        
   
         const email = result.user.email;
         if (email) {  
