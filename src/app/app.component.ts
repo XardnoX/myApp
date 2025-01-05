@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FirestoreService } from './services/firestore.service';
-import { SplashScreen } from '@capacitor/splash-screen';
+import { AuthService } from './services/auth.service'; // Import the AuthService
+import { SplashScreen } from '@capacitor/splash-screen'; // Optional if you use Capacitor SplashScreen
 
 @Component({
   selector: 'app-root',
@@ -10,14 +11,23 @@ import { SplashScreen } from '@capacitor/splash-screen';
 export class AppComponent implements OnInit {
   users: any[] = [];
 
-  constructor(private firestoreService: FirestoreService) {}
+  constructor(
+    private firestoreService: FirestoreService, 
+    private authService: AuthService // Inject the AuthService
+  ) {}
 
   ngOnInit() {
-    // Fetch users
+    // Handle Microsoft login redirect results
+
+
+    // Fetch users from Firestore
     this.firestoreService.getUsers().subscribe((data) => {
       this.users = data;
       console.log('Users:', this.users);
     });
+    this.authService.checkRedirectResult();
 
+    // Optional: Hide splash screen if you're using Capacitor
+    SplashScreen.hide();
   }
 }

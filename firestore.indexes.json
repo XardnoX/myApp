@@ -1,4 +1,19 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "user_has_widgets",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "widget_id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "role_has_user",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" },
+        { "fieldPath": "role_id", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

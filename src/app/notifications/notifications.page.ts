@@ -5,6 +5,7 @@ import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-u
 import { AuthService } from '../services/auth.service';
 import { WidgetsService } from '../services/widgets.service';
 import { Router } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 interface UserWidgetData {
   paid: boolean;
   owe: boolean;
@@ -24,7 +25,8 @@ export class NotificationsPage implements OnInit {
     private paidService: PaidService,
     private authService: AuthService,
     private widgetsService: WidgetsService,
-    public router: Router ,
+    public router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -58,9 +60,10 @@ export class NotificationsPage implements OnInit {
       .subscribe(
         async (allWidgets: any[]) => {
           console.log('Fetched Widgets:', allWidgets);
-
+  
           if (this.userId) {
             this.widgets = await this.mergeUserWidgetData(allWidgets);
+            this.cdr.detectChanges(); // Trigger change detection
           }
         },
         (error) => {
@@ -71,47 +74,97 @@ export class NotificationsPage implements OnInit {
 
   async mergeUserWidgetData(widgets: any[]): Promise<any[]> {
     try {
-      console.log('Widgets passed to mergeUserWidgetData:', widgets);
-  
       if (!this.userId) {
         console.warn('User ID is missing. Skipping merge.');
-        return widgets.map((widget) => ({ ...widget, paid: false, owe: false }));
+        return widgets.map((widget) => ({
+          ...widget,
+          paid: false,
+          owe: false,
+          progress: 0,
+          progressColor: 'success',
+          daysRemaining: 0,
+        }));
       }
   
       const mergedWidgets = await Promise.all(
         widgets.map(async (widget) => {
           try {
             const widgetId = widget.id;
-            console.log(`Fetching data for Widget ID: ${widgetId} and User ID: ${this.userId}`);
-  
             const userWidgetData = await this.widgetsService.getUserWidgetData(this.userId!, widgetId);
   
-            console.log('User Widget Data:', userWidgetData);
+            // Convert Firestore Timestamp to JavaScript Date
+            const start = widget.start.toDate ? widget.start.toDate() : new Date(widget.start);
+            const end = widget.end.toDate ? widget.end.toDate() : new Date(widget.end);
   
-            // Merge the user-widget data with the widget data
+            const progress = this.getProgress(start, end);
+            const progressColor = this.getProgressColor(start, end);
+            const daysRemaining = this.getDaysRemaining(end);
+  
             return {
               ...widget,
               paid: userWidgetData?.paid ?? false,
               owe: userWidgetData?.owe ?? false,
+              start,
+              end,
+              progress,
+              progressColor,
+              daysRemaining,
             };
           } catch (error) {
             console.error(`Error fetching data for widget ID: ${widget.id}`, error);
             return {
               ...widget,
               paid: false,
-              owe: false, // Defaults if error occurs
+              owe: false,
+              progress: 0,
+              progressColor: 'success',
+              daysRemaining: 0,
             };
           }
         })
       );
   
-     
-      return mergedWidgets;
+      // Filter out widgets that are "over" and paid
+      const filteredWidgets = mergedWidgets.filter((widget) => {
+        const today = new Date();
+        return !(today > widget.end && widget.paid);
+      });
+  
+      return filteredWidgets;
     } catch (error) {
       console.error('Error in mergeUserWidgetData:', error);
-      return widgets.map((widget) => ({ ...widget, paid: false, owe: false }));
+      return widgets.map((widget) => ({
+        ...widget,
+        paid: false,
+        owe: false,
+        progress: 0,
+        progressColor: 'success',
+        daysRemaining: 0,
+      }));
     }
   }
+  
+  async deleteWidget(widgetId: string) {
+    try {
+      // Confirm deletion
+      const confirmDelete = confirm('Opravdu chcete tento widget smazat?');
+      if (!confirmDelete) return;
+  
+      // Delete the widget from the "widgets" collection
+      await this.widgetsService.deleteWidget(widgetId);
+  
+      // Delete all relations for the widget in "user_has_widgets"
+      await this.widgetsService.deleteWidgetRelations(widgetId);
+  
+      // Remove the widget from the UI
+      this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
+  
+      console.log(`Widget ${widgetId} and its relations have been deleted.`);
+    } catch (error) {
+      console.error('Error deleting widget:', error);
+    }
+  }
+  
   logout() {
     this.authService.logout();
   }
@@ -122,4 +175,47 @@ export class NotificationsPage implements OnInit {
     });
     return await modal.present();
   }
+
+  getProgress(startDate: string, endDate: string): number {
+    const start = new Date(startDate).getTime();
+    const end = new Date(endDate).getTime();
+    const today = new Date().getTime();
+  
+    if (today < start) {
+      return 0; // Not started yet
+    } else if (today > end) {
+      return 1; // Already ended
+    }
+  
+    const totalDuration = end - start; // Total time between start and end
+    const elapsed = today - start; // Time elapsed since start
+    return elapsed / totalDuration; // Progress as a fraction
+  }
+
+
+  getProgressColor(startDate: string, endDate: string): string {
+    const progress = this.getProgress(startDate, endDate);
+
+    if (progress <= 0.9) {
+      return progress < 0.5 ? 'success' : 'warning';
+    } else {
+      return 'danger';
+    }
+  }
+
+
+  getDaysRemaining(endDate: string): number {
+    const end = new Date(endDate).getTime();
+    const today = new Date().getTime();
+  
+    if (today > end) {
+      return 0; // Already ended
+    }
+  
+    const msPerDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
+    return Math.ceil((end - today) / msPerDay); // Days remaining
+  }
 }
+
+
+

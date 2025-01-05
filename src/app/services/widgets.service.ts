@@ -36,5 +36,32 @@ export class WidgetsService {
       return null;
     }
   }
+
+    deleteWidget(widgetId: string): Promise<void> {
+      return this.firestore
+        .doc(`widgets/${widgetId}`)
+        .delete()
+        .then(() => console.log(`Widget ${widgetId} deleted successfully.`))
+        .catch((error) => console.error('Error deleting widget:', error));
+    }
   
-}
+    // Delete all relations for a widget in "user_has_widgets"
+    async deleteWidgetRelations(widgetId: string): Promise<void> {
+      const relationsRef = this.firestore.collection('user_has_widgets', (ref) =>
+        ref.where('widget_id', '==', `/widgets/${widgetId}`)
+      );
+  
+      const snapshot = await relationsRef.get().toPromise();
+      const batch = this.firestore.firestore.batch();
+  
+      snapshot?.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+  
+      return batch
+        .commit()
+        .then(() => console.log(`Relations for widget ${widgetId} deleted successfully.`))
+        .catch((error) => console.error('Error deleting relations:', error));
+    }
+  }
+
