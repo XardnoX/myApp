@@ -17,17 +17,16 @@ export class WidgetUsersModalComponent implements OnInit {
   ) {}
 
   loadUsersForWidget(widgetId: string) {
-    this.paidService.getUsersByWidget(widgetId).subscribe(
-      (response: any[]) => {
-        if (response && Array.isArray(response)) {
-          this.users = response;
-        }
+    this.paidService.getUsersForWidget(widgetId).subscribe(
+      (users) => {
+        this.users = users; // Store the combined data
       },
-      (error: any) => {
+      (error) => {
         console.error('Error fetching users for widget:', error);
       }
     );
   }
+  
 
   ngOnInit() {
     if (this.widgetId) {

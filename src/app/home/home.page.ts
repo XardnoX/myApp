@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -6,8 +6,13 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
   constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    // Handle login redirect results on initialization
+    
+  }
 
   login() {
     this.authService.loginWithMicrosoft();
