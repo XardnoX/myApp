@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-add-widget',
@@ -16,35 +17,62 @@ export class AddWidgetPage {
   authService: any;
   userClass: string | undefined;
 
-  constructor(private firestore: AngularFirestore, public router: Router) {}
+  constructor(
+    private firestore: AngularFirestore,
+    public router: Router,
+    private menuController: MenuController // Added MenuController for menu handling
+  ) {}
 
   async ngOnInit() {
     try {
       // Retrieve userId and userClass from localStorage
-  
       this.userClass = localStorage.getItem('userClass') ?? undefined;
-  
-  
+
       if (!this.userClass) {
         console.error('User class not found in localStorage.');
         return;
       }
-  
-      // Load widgets for the userClass
-
-      } catch (error) {
-        console.error('Error during ngOnInit:', error);
-      }
+    } catch (error) {
+      console.error('Error during ngOnInit:', error);
     }
+  }
+
   logout() {
     this.authService.logout();
   }
+
+  toggleMenu() {
+    this.menuController.toggle('add-widget-menu'); // Use the specific menuId
+  }
+  
+  closeMenu() {
+    this.menuController.close('add-widget-menu'); // Use the specific menuId
+  }
+  
   async createWidget() {
     try {
       // Get class from localStorage
       const userClass = localStorage.getItem('userClass');
       if (!userClass) {
         throw new Error('User class not found in localStorage.');
+      }
+
+      // Validation: Check required fields
+      if (!this.widgetName || !this.widgetPrice || !this.endDate) {
+        alert('Please fill in all required fields: Name, Price, and End Date.');
+        return;
+      }
+
+      // Automatically set start time to 00:01 and end time to 23:59
+      const formattedStart = this.startDate
+        ? this.setTimeTo(this.startDate, 0, 1) // Set start time to 00:01
+        : this.setTimeTo(new Date().toISOString(), 0, 1); // Default to current date
+      const formattedEnd = this.setTimeTo(this.endDate, 23, 59); // Set end time to 23:59
+
+      // Validate that `end` is after `start`
+      if (new Date(formattedEnd) <= new Date(formattedStart)) {
+        alert('End date must be after the start date.');
+        return;
       }
 
       // Fetch all users with the same class
@@ -60,10 +88,10 @@ export class AddWidgetPage {
       // Create the widget in the "widgets" collection
       const widgetDoc = await this.firestore.collection('widgets').add({
         name: this.widgetName,
-        description: this.widgetDescription,
+        description: this.widgetDescription || '', // Default to empty string if not provided
         price: this.widgetPrice,
-        start: this.startDate,
-        end: this.endDate,
+        start: formattedStart,
+        end: formattedEnd,
         class: userClass,
       });
 
@@ -89,12 +117,32 @@ export class AddWidgetPage {
 
       console.log('Relationships created successfully.');
       alert('Widget and relationships created successfully!');
+
+      // Reset all form fields after successful creation
+      this.resetFormFields();
       this.router.navigate([`/notifications/${userClass}`]);
-      // Redirect to another page (e.g., widgets list)
 
     } catch (error) {
       console.error('Error creating widget:', error);
       alert('Error creating widget. Check console for details.');
     }
   }
+
+  // Utility function to set specific time to a date
+  private setTimeTo(dateString: string, hours: number, minutes: number): string {
+    const date = new Date(dateString);
+    date.setHours(hours, minutes, 0, 0); // Set hours, minutes, seconds, milliseconds
+    return date.toISOString();
+  }
+
+  // Utility function to reset form fields
+  private resetFormFields() {
+    this.widgetName = '';
+    this.widgetDescription = '';
+    this.widgetPrice = null;
+    this.startDate = '';
+    this.endDate = '';
+  }
 }
+
+
