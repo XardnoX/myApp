@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, MenuController} from '@ionic/angular';
 import { PaidService } from '../services/paid.service';
 import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 import { AuthService } from '../services/auth.service';
@@ -26,7 +26,8 @@ export class NotificationsPage implements OnInit {
     private authService: AuthService,
     private widgetsService: WidgetsService,
     public router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private menuController: MenuController
   ) {}
 
   async ngOnInit() {
@@ -52,7 +53,13 @@ export class NotificationsPage implements OnInit {
     }
   }
   
+  toggleMenu() {
+    this.menuController.toggle('notifications-menu'); // Use the specific menuId
+  }
   
+  closeMenu() {
+    this.menuController.close('notifications-menu'); // Use the specific menuId
+  }
 
   loadWidgetsForClass(userClass: string) {
     this.paidService

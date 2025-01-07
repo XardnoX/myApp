@@ -3,13 +3,11 @@
     <!-- Title centered at the top -->
     <ion-title class="center-title">Oznámení pro třídu: {{userClass}}</ion-title>
 
-    <!-- Dropdown icon in the top-right corner -->
+    <!-- Dropdown button without slide effect -->
     <ion-buttons slot="end">
-      <ion-menu-toggle>
-        <ion-button>
-          <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-        </ion-button>
-      </ion-menu-toggle>
+      <ion-button (click)="toggleMenu()">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -41,14 +39,16 @@
       </p>
       <p><strong>Cena:</strong> {{ widget.price }} Kč</p>
       <div class="bottom-right">
-        <ion-button color="danger" fill="outline" (click)="deleteWidget(widget.id)">
+        <ion-button
+          color="danger"
+          fill="outline"
+          (click)="deleteWidget(widget.id); $event.stopPropagation()"
+        >
           Smazat
         </ion-button>
       </div>
     </ion-card-content>
   </ion-card>
-  
-  
 
   <!-- No Widgets Message -->
   <ion-item *ngIf="!widgets || widgets.length === 0">
@@ -56,8 +56,7 @@
   </ion-item>
 </ion-content>
 
-<!-- Dropdown menu -->
-<ion-menu side="end" content-id="main-content">
+<ion-menu side="end" content-id="main-content" menuId="notifications-menu" type="overlay">
   <ion-header>
     <ion-toolbar>
       <ion-title>Menu</ion-title>
@@ -65,11 +64,11 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item button (click)="logout()">
+      <ion-item button (click)="logout(); closeMenu()">
         <ion-icon slot="start" name="log-out-outline"></ion-icon>
         <ion-label>Odhlásit</ion-label>
       </ion-item>
-      <ion-item button (click)="router.navigate(['/add-widget'])">
+      <ion-item button (click)="router.navigate(['/add-widget']); closeMenu()">
         <ion-icon slot="start" name="add-outline"></ion-icon>
         <ion-label>Přidat Widget</ion-label>
       </ion-item>
