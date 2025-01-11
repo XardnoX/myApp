@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { map, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { switchMap, combineLatest } from 'rxjs';
+import { switchMap, combineLatest, first } from 'rxjs';
 
-interface UserWidgetData {
-  paid: boolean;
-  owe: boolean;}
+interface Widget {
+  full_paid?: boolean; 
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -56,8 +56,54 @@ export class PaidService {
         })
       );
   }
+
   
+  checkAndSetFullPaidOnce(widgetId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.getUsersForWidget(widgetId).subscribe(
+        (userWidgets) => {
+          // Check if all users have paid
+          const allPaid = userWidgets.every((userWidget) => userWidget.paid === true);
   
+          // Update `full_paid` only if needed
+          this.firestore
+            .doc(`widgets/${widgetId}`)
+            .get()
+            .pipe(first()) // Take the first value and complete the observable
+            .subscribe((doc) => {
+              if (doc.exists) {
+                const widgetData = doc.data() as Widget; // Explicitly cast to Widget
+                const currentFullPaid = widgetData.full_paid;
+  
+                if (currentFullPaid !== allPaid) {
+                  this.firestore
+                    .doc(`widgets/${widgetId}`)
+                    .update({ full_paid: allPaid })
+                    .then(() => {
+                      console.log(`Widget ${widgetId} full_paid updated to ${allPaid}`);
+                      resolve();
+                    })
+                    .catch((error) => {
+                      console.error(`Error updating full_paid for widget ${widgetId}:`, error);
+                      reject(error);
+                    });
+                } else {
+                  resolve(); // No update needed
+                }
+              } else {
+                console.error(`Widget ${widgetId} does not exist.`);
+                resolve();
+              }
+            });
+        },
+        (error) => {
+          console.error(`Error fetching users for widget ${widgetId}:`, error);
+          reject(error);
+        }
+      );
+    });
+  }
+ 
         
 getWidgetsByClass(userClass: string): Observable<any[]> {
   return this.firestore.collection('widgets', (ref) =>

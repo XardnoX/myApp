@@ -31,13 +31,14 @@
     </ion-card-header>
     <ion-card-content>
       <p>{{ widget.description }}</p>
+      <p><strong>Cena:</strong> {{ widget.price }} Kč</p>
       <p>
         <strong>Zaplaceno:</strong> {{ widget.paid ? 'Ano' : 'Ne' }}
       </p>
       <p *ngIf="widget.owe">
         <strong>Dluh:</strong> {{ widget.owe ? 'Ano' : 'Ne' }}
       </p>
-      <p><strong>Cena:</strong> {{ widget.price }} Kč</p>
+      <p><strong>Kompletně Zaplaceno:</strong> {{ widget.full_paid ? 'Ano' : 'Ne' }}</p>
       <div class="bottom-right">
         <ion-button
           color="danger"

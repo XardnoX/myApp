@@ -68,6 +68,11 @@ export class NotificationsPage implements OnInit {
         async (allWidgets: any[]) => {
           console.log('Fetched Widgets:', allWidgets);
   
+          // Check and update `full_paid` status for each widget
+          for (const widget of allWidgets) {
+            await this.paidService.checkAndSetFullPaidOnce(widget.id);
+          }
+  
           if (this.userId) {
             this.widgets = await this.mergeUserWidgetData(allWidgets);
             this.cdr.detectChanges(); // Trigger change detection
@@ -78,6 +83,8 @@ export class NotificationsPage implements OnInit {
         }
       );
   }
+  
+  
 
   async mergeUserWidgetData(widgets: any[]): Promise<any[]> {
     try {
