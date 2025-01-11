@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-add-widget',
@@ -14,10 +15,10 @@ export class AddWidgetPage {
   widgetPrice: number | null = null;
   startDate: string = '';
   endDate: string = '';
-  authService: any;
   userClass: string | undefined;
 
   constructor(
+    private authService: AuthService,
     private firestore: AngularFirestore,
     public router: Router,
     private menuController: MenuController // Added MenuController for menu handling
@@ -93,6 +94,7 @@ export class AddWidgetPage {
         start: formattedStart,
         end: formattedEnd,
         class: userClass,
+        full_paid: false
       });
 
       console.log('Widget created with ID:', widgetDoc.id);
