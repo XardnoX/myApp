@@ -25,6 +25,19 @@
             </intent-filter>
 
         </activity>
+        <!--
+        <activity android:name="com.microsoft.identity.client.BrowserTabActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:scheme="msauth"
+                android:host="MyApp"
+                android:path="/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D" />
+        </intent-filter>
+    </activity>
+-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
