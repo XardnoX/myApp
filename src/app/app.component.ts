@@ -13,19 +13,16 @@ export class AppComponent implements OnInit {
 
   constructor(
     private firestoreService: FirestoreService, 
-    private authService: AuthService // Inject the AuthService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // Handle Microsoft login redirect results
-
-
-    // Fetch users from Firestore
+    this.authService.checkRedirectResult();
     this.firestoreService.getUsers().subscribe((data) => {
       this.users = data;
       console.log('Users:', this.users);
     });
-    this.authService.checkRedirectResult();
+    
 
     // Optional: Hide splash screen if you're using Capacitor
     SplashScreen.hide();

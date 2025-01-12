@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { getAuth, signInWithPopup, signInWithRedirect, getRedirectResult, OAuthProvider } from 'firebase/auth';
-
+// import { msalConfig } from 'src/msal.config'; //
 @Injectable({
   providedIn: 'root',
 })
