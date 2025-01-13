@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { PaidService } from '../../services/paid.service';
 import { ModalController } from '@ionic/angular';
+import { UserActionModalComponent } from '../user-action-modal/user-action-modal.component';
 
 @Component({
   selector: 'app-widget-users-modal',
@@ -8,13 +9,10 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./widget-users-modal.component.scss'],
 })
 export class WidgetUsersModalComponent implements OnInit {
-  @Input() widgetId: string | null = null; // The ID of the widget
+  @Input() widgetId: string | null = null;
   users: any[] = []; // Array to store user payment information
 
-  constructor(
-    private paidService: PaidService,
-    private modalController: ModalController
-  ) {}
+  constructor(private paidService: PaidService, private modalController: ModalController) {}
 
   loadUsersForWidget(widgetId: string) {
     this.paidService.getUsersForWidget(widgetId).subscribe(
@@ -26,7 +24,19 @@ export class WidgetUsersModalComponent implements OnInit {
       }
     );
   }
-  
+
+  async openUserActionModal(user: any) {
+    const modal = await this.modalController.create({
+      component: UserActionModalComponent,
+      componentProps: {
+        userId: user.id,
+        widgetId: this.widgetId,
+        email: user.email,
+      },
+    });
+
+    return await modal.present();
+  }
 
   ngOnInit() {
     if (this.widgetId) {

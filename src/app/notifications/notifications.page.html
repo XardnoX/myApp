@@ -14,7 +14,7 @@
 
 <ion-content id="main-content" class="ion-padding">
   <!-- Widget Cards -->
-  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)">
+  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)" [ngStyle]="{ 'background-color': widget.paid ? '#0E300B' : '' }">
     <ion-card-header>
       <ion-card-title>
         {{ widget.name }}
