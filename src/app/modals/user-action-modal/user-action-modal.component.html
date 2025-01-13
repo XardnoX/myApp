@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ email }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">X</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="modal-container">
+    <ion-list>
+      <ion-radio-group [(ngModel)]="paymentStatus">
+        <ion-list-header>
+          <ion-label>Vyberte stav zaplacení:</ion-label>
+        </ion-list-header>
+        <ion-item>
+          <ion-label>Zaplaceno</ion-label>
+          <ion-radio slot="start" value="paid"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Dluh</ion-label>
+          <ion-radio slot="start" value="owe"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Nic</ion-label>
+          <ion-radio slot="start" value="nic"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+    <div class="button-container">
+      <ion-button expand="block" (click)="applyChanges()">POTVRDIT</ion-button>
+      <ion-button expand="block" color="dark" (click)="dismissModal()">ZRUŠIT</ion-button>
+    </div>
+  </div>
+</ion-content>

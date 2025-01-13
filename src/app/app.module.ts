@@ -15,11 +15,13 @@ import { firebaseConfig } from '../environments/firebaseConfig';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserActionModalComponent } from './modals/user-action-modal/user-action-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent, 
-    WidgetUsersModalComponent, 
+    WidgetUsersModalComponent,
+    UserActionModalComponent,
   ],
   imports: [
     BrowserModule,
