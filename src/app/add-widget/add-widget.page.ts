@@ -50,6 +50,7 @@ export class AddWidgetPage {
     this.menuController.close('add-widget-menu'); // Use the specific menuId
   }
   
+  
   async createWidget() {
     try {
       // Get class from localStorage
