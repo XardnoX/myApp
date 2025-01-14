@@ -1,9 +1,10 @@
-package com.google.android.gms.samples.pay.activity;
+package io.ionic.activity;
+
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.samples.pay.databinding.ActivityCheckoutSuccessBinding;
 
-public class CheckoutSuccessActivity extends AppCompatActivity {
+public class CheckoutSuccessfullActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

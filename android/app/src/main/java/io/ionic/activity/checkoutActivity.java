@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.gms.samples.pay.activity;
+package io.ionic.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -135,31 +135,37 @@ public class CheckoutActivity extends AppCompatActivity {
    * @see <a href="https://developers.google.com/pay/api/android/reference/
    * object#PaymentData">PaymentData</a>
    */
-  private void handlePaymentSuccess(PaymentData paymentData) {
+ private void handlePaymentSuccess(PaymentData paymentData) {
     final String paymentInfo = paymentData.toJson();
 
-    try {
-      JSONObject paymentMethodData = new JSONObject(paymentInfo).getJSONObject("paymentMethodData");
-      // If the gateway is set to "example", no payment information is returned - instead, the
-      // token will only consist of "examplePaymentMethodToken".
+    if (paymentInfo != null) {
+        try {
+            JSONObject paymentMethodData = new JSONObject(paymentInfo).getJSONObject("paymentMethodData");
 
-      final JSONObject info = paymentMethodData.getJSONObject("info");
-      final String billingName = info.getJSONObject("billingAddress").getString("name");
-      Toast.makeText(
-          this, getString(R.string.payments_show_name, billingName),
-          Toast.LENGTH_LONG).show();
+            // If the gateway is set to "example", no payment information is returned - instead, the
+            // token will only consist of "examplePaymentMethodToken".
 
-      // Logging token string.
-      Log.d("Google Pay token", paymentMethodData
-          .getJSONObject("tokenizationData")
-          .getString("token"));
+            final JSONObject info = paymentMethodData.getJSONObject("info");
+            final String billingName = info.getJSONObject("billingAddress").getString("name");
+            Toast.makeText(
+                this, getString(R.string.payments_show_name, billingName),
+                Toast.LENGTH_LONG).show();
 
-      startActivity(new Intent(this, CheckoutSuccessActivity.class));
+            // Logging token string.
+            Log.d("Google Pay token", paymentMethodData
+                .getJSONObject("tokenizationData")
+                .getString("token"));
 
-    } catch (JSONException e) {
-      Log.e("handlePaymentSuccess", "Error: " + e);
+            startActivity(new Intent(this, CheckoutSuccessfullActivity.class));
+
+        } catch (JSONException e) {
+            Log.e("handlePaymentSuccess", "Error parsing payment data: " + e);
+        }
+    } else {
+        Log.e("handlePaymentSuccess", "Payment info is null");
     }
-  }
+}
+
 
   private void possiblyShowGooglePayButton() {
 
@@ -183,7 +189,7 @@ public class CheckoutActivity extends AppCompatActivity {
           }
         }
       });
-}   
+}
 
   /**
    * At this stage, the user has already seen a popup informing them an error occurred. Normally,
