@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.pokladna-b4647.myApp',
+  appId: 'io.ionic.com',
   appName: 'Pokladna',
   webDir: 'www',
   plugins: {

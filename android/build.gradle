@@ -7,12 +7,25 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.7.2'
+        // Android Gradle Plugin
+        classpath 'com.android.tools.build:gradle:8.7.2' // Latest stable version as of January 2025
+
+        // Google Services Plugin
         classpath 'com.google.gms:google-services:4.4.0'
-        
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+
+        // Firebase Crashlytics Plugin (if needed)
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
+
+        // Kotlin Gradle Plugin (if your app uses Kotlin)
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
     }
+}
+
+// Add the ext block to define the SDK versions
+ext {
+    compileSdkVersion = 33 // Set to the version you want to compile against
+    minSdkVersion = 21     // Minimum supported SDK version
+    targetSdkVersion = 33  // Targeted SDK version
 }
 
 apply from: "variables.gradle"
@@ -21,7 +34,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Add if required
+        jcenter() // Only include if necessary; jcenter is deprecated.
     }
 }
 
