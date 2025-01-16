@@ -10,10 +10,22 @@ import { SplashScreen } from '@capacitor/splash-screen'; // Optional if you use 
 })
 export class AppComponent implements OnInit {
   users: any[] = [];
+  isDarkMode = false;
 
+  toggleTheme() {
+    this.isDarkMode = !this.isDarkMode;
+
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
+  
   constructor(
     private firestoreService: FirestoreService, 
     private authService: AuthService
+    
   ) {}
 
   ngOnInit() {

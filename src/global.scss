@@ -26,12 +26,58 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+* Ionic Dark Mode
+* -----------------------------------------------------
+* For more info, please see:
+* https://ionicframework.com/docs/theming/dark-mode
+*/
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  ion-content {
+    --background: var(--background-color);
+  }
+  
+  ion-card {
+    background-color: var(--card-color);
+    color: var(--text-color);
+  }
+  
+  ion-toolbar {
+    --background: var(--ion-toolbar-background);
+    --color: var(--ion-toolbar-color);
+  }
+  ion-card-title {
+    color: var(--card-title-color);
+  }
+  ion-menu {
+    ion-header {
+      --background: var(--menu-background-color);
+      --border-color: transparent; /* Removes the border/lines in the header */
+    }
+  
+    ion-toolbar {
+      --background: var(--menu-background-color);
+      --color: var(--menu-item-text-color);
+      border: none; /* Ensures no borders are visible */
+    }
+  
+    ion-list {
+      border: none; /* Removes borders around the list */
+    }
+  
+    ion-item {
+      --background: var(--menu-item-background-color);
+      --color: var(--menu-item-text-color);
+      --inner-border-width: 0px; /* Removes inner borders/lines */
+      border: none; /* Ensures no outer borders are visible */
+    }
+  }
+  

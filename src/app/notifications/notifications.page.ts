@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { WidgetsService } from '../services/widgets.service';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
+import { ThemeService } from '../services/theme.service';
 interface UserWidgetData {
   paid: boolean;
   owe: boolean;
@@ -19,7 +20,7 @@ export class NotificationsPage implements OnInit {
   widgets: any[] = [];
   userClass: string | undefined;
   userId: string | null = null;
-
+  isDarkMode = false;
   constructor(
     private modalController: ModalController,
     private paidService: PaidService,
@@ -27,10 +28,12 @@ export class NotificationsPage implements OnInit {
     private widgetsService: WidgetsService,
     public router: Router,
     private cdr: ChangeDetectorRef,
-    private menuController: MenuController
+    private menuController: MenuController,
+    private themeService: ThemeService
   ) {}
 
   async ngOnInit() {
+    this.isDarkMode = this.themeService.isDark();
     try {
       // Retrieve userId and userClass from localStorage
       this.userId = localStorage.getItem('userId');
@@ -53,6 +56,11 @@ export class NotificationsPage implements OnInit {
     }
   }
   
+  toggleTheme() {
+    this.themeService.toggleTheme();
+    this.isDarkMode = this.themeService.isDark();
+  }
+
   toggleMenu() {
     this.menuController.toggle('notifications-menu'); // Use the specific menuId
   }
@@ -76,12 +84,14 @@ export class NotificationsPage implements OnInit {
           if (this.userId) {
             this.widgets = await this.mergeUserWidgetData(allWidgets);
             this.cdr.detectChanges(); // Trigger change detection
+            this.widgets.sort((a, b) => Number(a.paid) - Number(b.paid));
           }
         },
         (error) => {
           console.error('Error fetching widgets:', error);
         }
       );
+    
   }
   
   

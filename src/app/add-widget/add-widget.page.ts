@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-add-widget',
@@ -16,15 +17,18 @@ export class AddWidgetPage {
   startDate: string = '';
   endDate: string = '';
   userClass: string | undefined;
+  isDarkMode = false;
 
   constructor(
     private authService: AuthService,
     private firestore: AngularFirestore,
     public router: Router,
-    private menuController: MenuController // Added MenuController for menu handling
+    private menuController: MenuController,  
+    private themeService: ThemeService // Added MenuController for menu handling
   ) {}
 
   async ngOnInit() {
+    this.isDarkMode = this.themeService.isDark();
     try {
       // Retrieve userId and userClass from localStorage
       this.userClass = localStorage.getItem('userClass') ?? undefined;
@@ -37,7 +41,10 @@ export class AddWidgetPage {
       console.error('Error during ngOnInit:', error);
     }
   }
-
+  toggleTheme() {
+    this.themeService.toggleTheme();
+    this.isDarkMode = this.themeService.isDark();
+  }
   logout() {
     this.authService.logout();
   }
