@@ -1,24 +1,27 @@
 :root {
-    /* Light mode variables */
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --card-color: #f8f8f8;
-    --ion-toolbar-background: #f8f8f8;
-    --ion-toolbar-color: #000000;
-    --menu-background-color: #f0f0f0; /* Light gray background for menu */
-    --menu-item-background-color: #ffffff; /* White background for menu items */
-    --menu-item-text-color: #000000; /* Black text for menu items */
-  }
-  
-  body.dark-mode {
-    /* Dark mode variables */
-    --background-color: #000000;
-    --text-color: #9c9c9c;
-    --card-color: #202020;
-    --ion-toolbar-background: #1e1e1e;
-    --ion-toolbar-color: #ffffff;
-    --card-title-color: #000000;
-    --menu-item-background-color: #2e2e2e; /* Slightly lighter gray for menu items */
-    --menu-item-text-color: #ffffff; /* White text for menu items */
-  }
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --card-color: #f8f8f8;
+  --ion-toolbar-background: #f8f8f8;
+  --ion-toolbar-color: #000000;
+  --menu-background-color: #f0f0f0;
+  --menu-item-background-color: #ffffff;
+  --menu-item-text-color: #000000;
+  --card-title-color: #858585;
+  --progress-bar-color: #007bff;
+  --icon-color: #000000; 
+}
 
+body.dark-mode {
+  --background-color: #000000;
+  --text-color: #9c9c9c;
+  --card-color: #202020;
+  --ion-toolbar-background: #1e1e1e;
+  --ion-toolbar-color: #ffffff;
+  --menu-background-color: #2e2e2e;
+  --menu-item-background-color: #2e2e2e;
+  --menu-item-text-color: #ffffff;
+  --card-title-color: #ffffff;
+  --progress-bar-color: #4caf50;
+  --icon-color: #ffffff;
+}
