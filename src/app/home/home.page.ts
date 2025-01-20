@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
 import { ThemeService } from '../services/theme.service';
 import {
   ActionPerformed,
@@ -14,23 +15,27 @@ import {
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  constructor(public authService: AuthService,  private themeService: ThemeService) {}
   isDarkMode = false;
+
+  constructor(
+    public authService: AuthService,
+    private themeService: ThemeService,
+    private notificationService: NotificationService
+  ) {}
+
   ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
-    // Handle login redirect results on initialization
-    PushNotifications.requestPermissions().then((result) => {
-      if (result.receive === 'granted') {
-        // Register with Apple / Google to receive push via APNS/FCM
-        PushNotifications.register();
-      }
-    });
-    
+
+    // Call the notification methods
+    this.notificationService.requestNotificationPermissions(); // Ensure parentheses are added
+    this.notificationService.listenForMessages(); // Ensure parentheses are added
   }
+
   toggleTheme() {
     this.themeService.toggleTheme();
     this.isDarkMode = this.themeService.isDark();
   }
+
   login() {
     this.authService.loginWithMicrosoft();
   }

@@ -5,10 +5,8 @@ const config: CapacitorConfig = {
   appName: 'Pokladna',
   webDir: 'www',
   plugins: {
-    LocalNotifications: {
-      smallIcon: 'ic_stat_icon',
-      iconColor: '#488AFF',
-      sound: 'beep.wav',
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
     },
   }
 };

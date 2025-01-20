@@ -1,17 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         // Android Gradle Plugin
-        classpath 'com.android.tools.build:gradle:8.7.2' // Latest stable version as of January 2025
+        classpath 'com.android.tools.build:gradle:8.7.2'
 
-        // Google Services Plugin
-        classpath 'com.google.gms:google-services:4.4.0'
+        // Google Services Plugin (required for Firebase)
+        classpath 'com.google.gms:google-services:4.4.2'
 
         // Firebase Crashlytics Plugin (if needed)
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
@@ -21,20 +20,17 @@ buildscript {
     }
 }
 
-// Add the ext block to define the SDK versions
 ext {
-    compileSdkVersion = 33 // Set to the version you want to compile against
-    minSdkVersion = 21     // Minimum supported SDK version
-    targetSdkVersion = 33  // Targeted SDK version
+    compileSdkVersion = 34
+    minSdkVersion = 22
+    targetSdkVersion = 34
 }
-
-apply from: "variables.gradle"
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Only include if necessary; jcenter is deprecated.
+        jcenter() // Deprecated, only include if necessary.
     }
 }
 
