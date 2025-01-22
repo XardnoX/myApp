@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PushNotifications, Token } from '@capacitor/push-notifications';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
@@ -7,7 +8,17 @@ import { PushNotifications, Token } from '@capacitor/push-notifications';
 export class NotificationService {
   constructor() {}
 
+  private isSupportedPlatform(): boolean {
+    const platform = Capacitor.getPlatform();
+    return platform === 'android' || platform === 'ios';
+  }
+
   async getFCMToken(): Promise<string | null> {
+    if (!this.isSupportedPlatform()) {
+      console.warn('PushNotifications plugin is not supported on this platform.');
+      return null;
+    }
+
     try {
       const permissionStatus = await PushNotifications.requestPermissions();
       if (permissionStatus.receive === 'granted') {
@@ -33,7 +44,13 @@ export class NotificationService {
       return null;
     }
   }
+
   async requestNotificationPermissions() {
+    if (!this.isSupportedPlatform()) {
+      console.warn('PushNotifications plugin is not supported on this platform.');
+      return;
+    }
+
     try {
       const permissionStatus = await PushNotifications.requestPermissions();
       if (permissionStatus.receive === 'granted') {
@@ -56,16 +73,38 @@ export class NotificationService {
   }
 
   listenForMessages() {
-    // Listen for push notifications
+    if (!this.isSupportedPlatform()) {
+      console.warn('PushNotifications plugin is not supported on this platform.');
+      return;
+    }
+
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
       console.log('Push notification received:', notification);
-      // TODO: Handle the notification (e.g., display it in-app)
     });
 
-    // Handle actions when a notification is tapped
     PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
       console.log('Push notification action performed:', action);
-      // TODO: Handle the action (e.g., navigate to a specific page)
     });
+  }
+
+  async requestWebNotificationPermissions() {
+    if (Capacitor.getPlatform() === 'web') {
+      try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          console.log('Web push notifications permissions granted.');
+        } else {
+          console.warn('Web push notifications permissions denied.');
+        }
+      } catch (error) {
+        console.error('Error requesting web notification permissions:', error);
+      }
+    }
+  }
+
+  showWebNotification(title: string, options?: NotificationOptions) {
+    if (Capacitor.getPlatform() === 'web' && Notification.permission === 'granted') {
+      new Notification(title, options);
+    }
   }
 }

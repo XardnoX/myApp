@@ -1,9 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <!-- Title centered at the top -->
     <ion-title class="center-title">Oznámení pro třídu: {{userClass}}</ion-title>
     
-    <!-- Dropdown button without slide effect -->
     <ion-buttons slot="end">
       <ion-button (click)="toggleTheme()">
         <ion-icon
@@ -19,7 +17,6 @@
 </ion-header>
 
 <ion-content id="main-content" class="ion-padding">
-  <!-- Widget Cards -->
   <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)" [ngClass]="{ 'widget-color': widget.paid }">
     <ion-card-header>
       <ion-card-title>
@@ -55,7 +52,6 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- No Widgets Message -->
   <ion-item *ngIf="!widgets || widgets.length === 0">
     <ion-label>Pro Vaši třídu nejsou k dispozici žádné upozornění.</ion-label>
   </ion-item>

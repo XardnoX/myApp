@@ -35,7 +35,6 @@ export class NotificationsPage implements OnInit {
   async ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
     try {
-      // Retrieve userId and userClass from localStorage
       this.userId = localStorage.getItem('userId');
       this.userClass = localStorage.getItem('userClass') ?? undefined;
   
@@ -62,11 +61,11 @@ export class NotificationsPage implements OnInit {
   }
 
   toggleMenu() {
-    this.menuController.toggle('notifications-menu'); // Use the specific menuId
+    this.menuController.toggle('notifications-menu');
   }
   
   closeMenu() {
-    this.menuController.close('notifications-menu'); // Use the specific menuId
+    this.menuController.close('notifications-menu');
   }
 
   loadWidgetsForClass(userClass: string) {
@@ -76,14 +75,13 @@ export class NotificationsPage implements OnInit {
         async (allWidgets: any[]) => {
           console.log('Fetched Widgets:', allWidgets);
   
-          // Check and update `full_paid` status for each widget
           for (const widget of allWidgets) {
             await this.paidService.checkAndSetFullPaidOnce(widget.id);
           }
   
           if (this.userId) {
             this.widgets = await this.mergeUserWidgetData(allWidgets);
-            this.cdr.detectChanges(); // Trigger change detection
+            this.cdr.detectChanges();
             this.widgets.sort((a, b) => Number(a.paid) - Number(b.paid));
           }
         },

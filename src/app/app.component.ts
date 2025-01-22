@@ -36,9 +36,7 @@ export class AppComponent implements OnInit {
       if (data.url) {
         console.log('App opened with URL:', data.url);
     
-        // Handle the redirect URL from Firebase Auth
         if (data.url.includes('__/auth/handler')) {
-          // Ensure the Angular router navigates properly
           this.router.navigateByUrl(data.url);
         }
       }
@@ -50,7 +48,6 @@ export class AppComponent implements OnInit {
     });
     
     
-    // Optional: Hide splash screen if you're using Capacitor
     SplashScreen.hide();
   }
 }

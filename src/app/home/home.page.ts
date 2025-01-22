@@ -2,12 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
 import { ThemeService } from '../services/theme.service';
-import {
-  ActionPerformed,
-  PushNotificationSchema,
-  PushNotifications,
-  Token,
-} from '@capacitor/push-notifications';
+import { isPlatform } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -26,9 +21,13 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
 
-    // Call the notification methods
-    this.notificationService.requestNotificationPermissions(); // Ensure parentheses are added
-    this.notificationService.listenForMessages(); // Ensure parentheses are added
+    if (isPlatform('android') || isPlatform('ios')) {
+      this.notificationService.requestNotificationPermissions();
+      this.notificationService.listenForMessages();
+    } else {
+      console.log('Push notifications are not supported on this platform.');
+    }
+  
   }
 
   toggleTheme() {
@@ -37,7 +36,11 @@ export class HomePage implements OnInit {
   }
 
   login() {
-    this.authService.loginWithMicrosoft();
+    if (isPlatform('android')) {
+      this.authService.loginWithMicrosoftAndroid();
+    } else {
+      this.authService.loginWithMicrosoft();
+    }
   }
 
   logout() {

@@ -24,13 +24,12 @@ export class AddWidgetPage {
     private firestore: AngularFirestore,
     public router: Router,
     private menuController: MenuController,  
-    private themeService: ThemeService // Added MenuController for menu handling
+    private themeService: ThemeService
   ) {}
 
   async ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
     try {
-      // Retrieve userId and userClass from localStorage
       this.userClass = localStorage.getItem('userClass') ?? undefined;
 
       if (!this.userClass) {
@@ -50,41 +49,36 @@ export class AddWidgetPage {
   }
 
   toggleMenu() {
-    this.menuController.toggle('add-widget-menu'); // Use the specific menuId
+    this.menuController.toggle('add-widget-menu');
   }
   
   closeMenu() {
-    this.menuController.close('add-widget-menu'); // Use the specific menuId
+    this.menuController.close('add-widget-menu');
   }
-  
   
   async createWidget() {
     try {
-      // Get class from localStorage
+
       const userClass = localStorage.getItem('userClass');
       if (!userClass) {
         throw new Error('User class not found in localStorage.');
       }
 
-      // Validation: Check required fields
       if (!this.widgetName || !this.widgetPrice || !this.endDate) {
         alert('Please fill in all required fields: Name, Price, and End Date.');
         return;
       }
 
-      // Automatically set start time to 00:01 and end time to 23:59
       const formattedStart = this.startDate
-        ? this.setTimeTo(this.startDate, 0, 1) // Set start time to 00:01
-        : this.setTimeTo(new Date().toISOString(), 0, 1); // Default to current date
-      const formattedEnd = this.setTimeTo(this.endDate, 23, 59); // Set end time to 23:59
+        ? this.setTimeTo(this.startDate, 0, 1) 
+        : this.setTimeTo(new Date().toISOString(), 0, 1); 
+      const formattedEnd = this.setTimeTo(this.endDate, 23, 59);
 
-      // Validate that `end` is after `start`
       if (new Date(formattedEnd) <= new Date(formattedStart)) {
         alert('End date must be after the start date.');
         return;
       }
 
-      // Fetch all users with the same class
       const usersSnapshot = await this.firestore
         .collection('users', (ref) => ref.where('class', '==', userClass))
         .get()
@@ -94,10 +88,9 @@ export class AddWidgetPage {
         throw new Error('No users found for the class.');
       }
 
-      // Create the widget in the "widgets" collection
       const widgetDoc = await this.firestore.collection('widgets').add({
         name: this.widgetName,
-        description: this.widgetDescription || '', // Default to empty string if not provided
+        description: this.widgetDescription || '',
         price: this.widgetPrice,
         start: formattedStart,
         end: formattedEnd,
@@ -107,7 +100,7 @@ export class AddWidgetPage {
 
       console.log('Widget created with ID:', widgetDoc.id);
 
-      // Create relationships in "user_has_widgets" for each user
+  
       const batch = this.firestore.firestore.batch();
       usersSnapshot.forEach((userDoc) => {
         const relationshipRef = this.firestore
@@ -117,18 +110,16 @@ export class AddWidgetPage {
         batch.set(relationshipRef, {
           user_id: `/users/${userDoc.id}`,
           widget_id: `/widgets/${widgetDoc.id}`,
-          paid: false, // Default to false
-          owe: false, // Default to false
+          paid: false,
+          owe: false,
         });
       });
 
-      // Commit the batch
       await batch.commit();
 
       console.log('Relationships created successfully.');
       alert('Widget and relationships created successfully!');
 
-      // Reset all form fields after successful creation
       this.resetFormFields();
       this.router.navigate([`/notifications/${userClass}`]);
 
@@ -138,14 +129,12 @@ export class AddWidgetPage {
     }
   }
 
-  // Utility function to set specific time to a date
   private setTimeTo(dateString: string, hours: number, minutes: number): string {
     const date = new Date(dateString);
-    date.setHours(hours, minutes, 0, 0); // Set hours, minutes, seconds, milliseconds
+    date.setHours(hours, minutes, 0, 0);
     return date.toISOString();
   }
 
-  // Utility function to reset form fields
   private resetFormFields() {
     this.widgetName = '';
     this.widgetDescription = '';

@@ -23,14 +23,13 @@
             android:launchMode="singleTask"
             android:exported="true">
 
-            <!-- Launcher Intent -->
+            <!-- Combined Intent Filters -->
             <intent-filter>
+                <!-- Launcher -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
-            <!-- Firebase Auth Redirect Intent -->
-            <intent-filter>
+                <!-- Firebase Auth Redirect -->
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -51,7 +50,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="msauth"
-                    android:host="MyApp"
+                    android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D" />
             </intent-filter>
         </activity>
