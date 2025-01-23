@@ -38,12 +38,6 @@ export class AuthService {
       console.error('Error during Microsoft login (Popup):', error);
     }
   }
-  
-  
-  async checkRedirectResult() {
-    const auth = getAuth();
-    try {
-      const result = await getRedirectResult(auth);
 
   async loginWithMicrosoftAndroid() {
     const loginRequest = {
