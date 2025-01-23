@@ -4,4 +4,8 @@ export const msalConfig = {
     authority: "https://login.microsoftonline.com/common", // For multi-tenant apps
     redirectUri: "msauth://MyApp/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D", // Update with your redirect URI
   },
+  cache: {
+    cacheLocation: 'localStorage', // Store tokens in localStorage
+    storeAuthStateInCookie: true, // Enable for compatibility with all browsers
+  },
 };

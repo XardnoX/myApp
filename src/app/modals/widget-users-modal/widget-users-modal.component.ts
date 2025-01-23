@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { PaidService } from '../../services/paid.service';
 import { ModalController } from '@ionic/angular';
 import { UserActionModalComponent } from '../user-action-modal/user-action-modal.component';
-
+import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-widget-users-modal',
   templateUrl: './widget-users-modal.component.html',
@@ -11,9 +11,18 @@ import { UserActionModalComponent } from '../user-action-modal/user-action-modal
 export class WidgetUsersModalComponent implements OnInit {
   @Input() widgetId: string | null = null;
   users: any[] = []; // Array to store user payment information
+  isDarkMode = false;
+  constructor(private paidService: PaidService, private modalController: ModalController, private themeService: ThemeService) {}
+  
+  
+    ngOnInit() {
+      if (this.widgetId) {
+        this.loadUsersForWidget(this.widgetId);
+        this.isDarkMode = this.themeService.isDark();
+      }
+    }
 
-  constructor(private paidService: PaidService, private modalController: ModalController) {}
-
+  
   loadUsersForWidget(widgetId: string) {
     this.paidService.getUsersForWidget(widgetId).subscribe(
       (users) => {
@@ -37,11 +46,11 @@ export class WidgetUsersModalComponent implements OnInit {
 
     return await modal.present();
   }
-
-  ngOnInit() {
-    if (this.widgetId) {
-      this.loadUsersForWidget(this.widgetId);
-    }
+  
+  toggleTheme() {
+    // Toggle theme using ThemeService
+    this.themeService.toggleTheme();
+    this.isDarkMode = this.themeService.isDark();
   }
 
   dismissModal() {

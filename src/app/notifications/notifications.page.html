@@ -1,10 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <!-- Title centered at the top -->
     <ion-title class="center-title">Oznámení pro třídu: {{userClass}}</ion-title>
-
-    <!-- Dropdown button without slide effect -->
+    
     <ion-buttons slot="end">
+      <ion-button (click)="toggleTheme()">
+        <ion-icon
+          slot="icon-only"
+          [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'">
+        </ion-icon>
+      </ion-button>
       <ion-button (click)="toggleMenu()">
         <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
       </ion-button>
@@ -13,17 +17,16 @@
 </ion-header>
 
 <ion-content id="main-content" class="ion-padding">
-  <!-- Widget Cards -->
-  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)" [ngStyle]="{ 'background-color': widget.paid ? '#0E300B' : '' }">
+  <ion-card *ngFor="let widget of widgets" (click)="openWidgetUsersModal(widget.id)" [ngClass]="{ 'widget-color': widget.paid }">
     <ion-card-header>
       <ion-card-title>
-        {{ widget.name }}
+        <strong>  {{ widget.name }} </strong>
         <div class="top-right-section">
           <span class="end-date">{{ widget.end | date: 'd. M. yyyy' }}</span>
           <ion-progress-bar
-            [value]="widget.progress"
-            [color]="widget.progressColor"
-            class="small-progress-bar"
+          [value]="widget.progress"
+          [color]="widget.progressColor"
+          class="small-progress-bar"
           ></ion-progress-bar>
           <p class="date"><strong>Zbývá:</strong> {{ widget.daysRemaining }} dní</p>
         </div>
@@ -32,18 +35,16 @@
     <ion-card-content>
       <p>{{ widget.description }}</p>
       <p><strong>Cena:</strong> {{ widget.price }} Kč</p>
-      <p>
-        <strong>Zaplaceno:</strong> {{ widget.paid ? 'Ano' : 'Ne' }}
-      </p>
+      <!-- <strong>Zaplaceno:</strong> {{ widget.paid ? 'Ano' : 'Ne' }}</p> -->
       <p *ngIf="widget.owe">
         <strong>Dluh:</strong> {{ widget.owe ? 'Ano' : 'Ne' }}
       </p>
       <p><strong>Kompletně Zaplaceno:</strong> {{ widget.full_paid ? 'Ano' : 'Ne' }}</p>
       <div class="bottom-right">
         <ion-button
-          color="danger"
-          fill="outline"
-          (click)="deleteWidget(widget.id); $event.stopPropagation()"
+        color="danger"
+        fill="outline"
+        (click)="deleteWidget(widget.id); $event.stopPropagation()"
         >
           Smazat
         </ion-button>

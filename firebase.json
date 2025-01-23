@@ -1,20 +1,34 @@
 {
   "hosting": {
-    "public": "www",
+    "public": "www", 
     "ignore": [
-      "firebase.json",
-      "**/.*",
+      "firebase.json", 
+      "**/.*", 
       "**/node_modules/**"
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "**", 
+        "destination": "/index.html" 
       }
     ]
   },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "source": "functions" 
+  },
+  "emulators": {
+    "hosting": {
+      "port": 5000
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    }
   }
 }
