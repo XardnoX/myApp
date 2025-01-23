@@ -16,6 +16,7 @@ export class HomePage implements OnInit {
     public authService: AuthService,
     private themeService: ThemeService,
     private notificationService: NotificationService
+    
   ) {}
 
   ngOnInit() {
@@ -35,10 +36,6 @@ export class HomePage implements OnInit {
     this.isDarkMode = this.themeService.isDark();
   }
 
-  ngOnInit() {
-    // Handle login redirect results on initialization
-    
-  }
 
   login() {
     if (isPlatform('android')) {
