@@ -1,47 +1,65 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "io.ionic.starter"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace "io.ionic.com"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
     defaultConfig {
-        applicationId "io.ionic.starter"
+        applicationId "io.ionic.com"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    buildFeatures {
+     
+        viewBinding true
+        dataBinding true
+    }   
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-    }
+   
 }
 
 dependencies {
-    implementation 'com.microsoft.identity.client:msal:2.0.13'
+    // Dependency for Java libraries in the libs directory
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
-    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+
+    // AndroidX libraries
+    implementation "androidx.appcompat:appcompat:1.6.1" // Latest AppCompat version
+    implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0" // Latest CoordinatorLayout version
+    implementation "androidx.core:core-splashscreen:1.0.1" // Latest Core SplashScreen version
+
+    // Capacitor core dependency
     implementation project(':capacitor-android')
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
-    implementation('com.google.android.gms:play-services-wallet:19.4.0') //pro google pay
+
+    // Lifecycle libraries
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.1' // Updated
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1' // Updated
+
+    // Google Play Services (for Google Pay)
+    implementation 'com.google.android.gms:play-services-wallet:19.4.0' // Latest Wallet library
+
+    // Test dependencies
+    testImplementation "junit:junit:4.13.2" // Updated to latest stable
+    androidTestImplementation "androidx.test.ext:junit:1.1.5" // Updated to latest stable
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1" // Updated to latest stable
+
+    // Additional Microsoft Authentication Library dependency (uncomment if needed)
+    // implementation 'com.microsoft.identity.client:msal:4.5.0' // Latest MSAL version
 }
 
 apply from: 'capacitor.build.gradle'
@@ -49,7 +67,7 @@ apply from: 'capacitor.build.gradle'
 try {
     def servicesJSON = file('google-services.json')
     if (servicesJSON.text) {
-        apply plugin: 'com.google.gms.google-services'
+        apply plugin: 'com.google.gms.google-services' // Google Services plugin
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")

@@ -37,21 +37,20 @@ export class PaidService {
           })
         ),
         switchMap((userWidgetRelations) => {
-          // Create an array of Observables for fetching user data
           const userRequests = userWidgetRelations.map((relation) => {
-            const userId = relation.user_id.replace('/users/', ''); // Extract user document ID
+            const userId = relation.user_id.replace('/users/', '');
             return this.firestore
               .doc<{ email: string }>(`users/${userId}`)
               .valueChanges()
               .pipe(
                 map((user) => ({
                   ...relation,
-                  email: user?.email || 'Unknown', // Add the user's email or 'Unknown' if null
+                  email: user?.email || 'Unknown', 
                 }))
               );
           });
   
-          // Combine all Observables into a single Observable
+
           return combineLatest(userRequests.length ? userRequests : [of([])]);
         })
       );
@@ -62,17 +61,15 @@ export class PaidService {
     return new Promise((resolve, reject) => {
       this.getUsersForWidget(widgetId).subscribe(
         (userWidgets) => {
-          // Check if all users have paid
           const allPaid = userWidgets.every((userWidget) => userWidget.paid === true);
   
-          // Update `full_paid` only if needed
           this.firestore
             .doc(`widgets/${widgetId}`)
             .get()
-            .pipe(first()) // Take the first value and complete the observable
+            .pipe(first())
             .subscribe((doc) => {
               if (doc.exists) {
-                const widgetData = doc.data() as Widget; // Explicitly cast to Widget
+                const widgetData = doc.data() as Widget;
                 const currentFullPaid = widgetData.full_paid;
   
                 if (currentFullPaid !== allPaid) {
@@ -88,7 +85,7 @@ export class PaidService {
                       reject(error);
                     });
                 } else {
-                  resolve(); // No update needed
+                  resolve();
                 }
               } else {
                 console.error(`Widget ${widgetId} does not exist.`);
@@ -113,7 +110,7 @@ getWidgetsByClass(userClass: string): Observable<any[]> {
   .pipe(
     map((changes) =>
       changes.map((c) => ({
-        id: c.payload.doc.id, // Ensure 'id' is extracted correctly
+        id: c.payload.doc.id,
         ...(c.payload.doc.data() as {}),
       }))
     )

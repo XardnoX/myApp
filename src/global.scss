@@ -26,12 +26,94 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+* Ionic Dark Mode
+* -----------------------------------------------------
+* For more info, please see:
+* https://ionicframework.com/docs/theming/dark-mode
+*/
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+/* Body styling */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Toolbar styling */
+ion-toolbar {
+  --background: var(--ion-toolbar-background);
+  --color: var(--ion-toolbar-color);
+  border: none; /* Removes toolbar borders */
+}
+
+/* Title styling */
+ion-title {
+  color: var(--ion-toolbar-color);
+}
+
+/* Card styling */
+ion-card {
+  background-color: var(--card-color);
+  color: var(--text-color);
+  border-radius: 8px; /* Rounded corners for cards */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+ion-card-title {
+  color: var(--card-title-color);
+  font-weight: bold;
+}
+
+/* Progress bar styling */
+ion-progress-bar {
+  --progress-background: #e0e0e0; /* Background of the progress bar */
+  --progress-color: var(--progress-bar-color); /* Color of the progress */
+  height: 6px; /* Custom height for progress bar */
+  border-radius: 3px;
+}
+
+/* Button styling */
+ion-button {
+  --color: var(--text-color);
+  --border-color: var(--button-outline-color);
+  border: 1px solid var(--button-outline-color);
+  border-radius: 4px;
+}
+
+/* Menu styling */
+ion-menu {
+  --background: var(--menu-background-color);
+  --color: var(--menu-item-text-color);
+}
+
+ion-header {
+  --background: var(--menu-background-color);
+  border: none; /* Removes border in menu header */
+}
+
+ion-toolbar {
+  --background: var(--menu-background-color);
+  --color: var(--menu-item-text-color);
+  border: none; /* Removes toolbar borders in the menu */
+}
+
+ion-item {
+  --background: var(--menu-item-background-color);
+  --color: var(--menu-item-text-color);
+  border: none; /* Removes borders around menu items */
+}
+
+/* Icon Styling */
+ion-icon {
+  color: var(--icon-color);
+}
+
+/* Utility Classes */
+.widget-color {
+  background-color: var(--progress-bar-color); /* Example color for widgets */
+  color: var(--text-color);
+}
+

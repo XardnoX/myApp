@@ -9,8 +9,8 @@ export class WidgetsService {
 
   async getUserWidgetData(userId: string, widgetId: string): Promise<any | null> {
     try {
-      const formattedUserId = `/users/${userId}`; // Ensure the format matches the database
-      const formattedWidgetId = `/widgets/${widgetId}`; // Ensure the format matches the database
+      const formattedUserId = `/users/${userId}`;
+      const formattedWidgetId = `/widgets/${widgetId}`;
   
       console.log('Formatted User ID:', formattedUserId);
       console.log('Formatted Widget ID:', formattedWidgetId);
@@ -26,7 +26,7 @@ export class WidgetsService {
       if (snapshot && !snapshot.empty) {
         const doc = snapshot.docs[0];
         console.log('Document found:', doc.data());
-        return { id: doc.id, ...(doc.data() as object) }; // Combine document ID and data
+        return { id: doc.id, ...(doc.data() as object) };
       } else {
         console.warn(`No record found for user_id: ${formattedUserId} and widget_id: ${formattedWidgetId}`);
         return null;

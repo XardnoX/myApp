@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "558550277315",
+    "firebase_url": "https://pokladna-b4647-default-rtdb.firebaseio.com",
+    "project_id": "pokladna-b4647",
+    "storage_bucket": "pokladna-b4647.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:558550277315:android:e4d247f11765f0d9e1d676",
+        "android_client_info": {
+          "package_name": "io.ionic.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "558550277315-6glk0fk12jf9j09oek4nbb5nsq6t2pg6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaD9IAwZQtaKoLJmVAtQodUdakn_xV8nU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "558550277315-6glk0fk12jf9j09oek4nbb5nsq6t2pg6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

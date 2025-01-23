@@ -9,8 +9,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
           
-        <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true" />
+        <!-- Google Wallet API -->
+        <meta-data 
+            android:name="com.google.android.gms.wallet.api.enabled" 
+            android:value="true" />
 
+        <!-- Main Activity -->
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:name=".MainActivity"
@@ -19,11 +23,21 @@
             android:launchMode="singleTask"
             android:exported="true">
 
+            <!-- Combined Intent Filters -->
             <intent-filter>
+                <!-- Launcher -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
+                <!-- Firebase Auth Redirect -->
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="msauth"
+                    android:host="pokladna-b4647.firebaseapp.com"
+                    android:path="/__/auth/handler" />
+            </intent-filter>
         </activity>
         <!--
         <activity android:name="com.microsoft.identity.client.BrowserTabActivity">
@@ -39,6 +53,22 @@
     </activity>
 -->
 
+        <!-- Microsoft Identity Browser Activity -->
+        <activity 
+            android:name="com.microsoft.identity.client.BrowserTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="msauth"
+                    android:host="pokladna-b4647.firebaseapp.com"
+                    android:path="/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D" />
+            </intent-filter>
+        </activity>
+
+        <!-- File Provider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -46,11 +76,13 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
 
     <!-- Permissions -->
-
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 </manifest>

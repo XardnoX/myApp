@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-
+import { ThemeService } from '../../services/theme.service';
 @Component({
   selector: 'app-user-action-modal',
   templateUrl: './user-action-modal.component.html',
@@ -12,11 +12,23 @@ export class UserActionModalComponent {
   @Input() widgetId!: string;
   @Input() email!: string; // Add this line
   paymentStatus: 'paid' | 'owe' | 'nic' | null = null;
-
+  isDarkMode = false;
   constructor(
     private modalController: ModalController,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    private themeService: ThemeService
   ) {}
+
+  ngOnInit() {
+    // Initialize dark mode state from ThemeService
+    this.isDarkMode = this.themeService.isDark();
+  }
+  
+  toggleTheme() {
+    // Toggle theme using ThemeService
+    this.themeService.toggleTheme();
+    this.isDarkMode = this.themeService.isDark();
+  }
 
   dismissModal() {
     this.modalController.dismiss();
