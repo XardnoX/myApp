@@ -168,7 +168,7 @@ export class NotificationsPage implements OnInit {
   
   async deleteWidget(widgetId: string) {
     try {
-      // Confirm deletion
+      // Confirm delete
       const confirmDelete = confirm('Opravdu chcete tento widget smazat?');
       if (!confirmDelete) return;
   
