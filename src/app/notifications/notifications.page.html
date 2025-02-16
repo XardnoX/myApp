@@ -39,8 +39,10 @@
       <p *ngIf="widget.owe">
         <strong>Dluh:</strong> {{ widget.owe ? 'Ano' : 'Ne' }}
       </p>
+     <!-- Admin-View -->
       <p><strong>Kompletně Zaplaceno:</strong> {{ widget.full_paid ? 'Ano' : 'Ne' }}</p>
       <div class="bottom-right">
+        <!-- Admin-View -->
         <ion-button
         color="danger"
         fill="outline"
