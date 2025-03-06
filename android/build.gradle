@@ -6,16 +6,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Android Gradle Plugin
+        // ✅ Android Gradle Plugin (Ensure it matches your Gradle wrapper)
         classpath 'com.android.tools.build:gradle:8.7.2'
 
-        // Google Services Plugin (required for Firebase)
+        // ✅ Google Services Plugin (for Firebase)
         classpath 'com.google.gms:google-services:4.4.2'
 
-        // Firebase Crashlytics Plugin (if needed)
+        // ✅ Firebase Crashlytics Plugin (if needed)
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
 
-        // Kotlin Gradle Plugin (if your app uses Kotlin)
+        // ✅ Kotlin Gradle Plugin (if using Kotlin)
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
     }
 }
@@ -28,9 +28,21 @@ ext {
 
 allprojects {
     repositories {
-        google()
         mavenCentral()
-        jcenter() // Deprecated, only include if necessary.
+        google()
+        mavenLocal()
+        maven {
+            url 'https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1'
+        }
+        maven {
+            name "vsts-maven-adal-android"
+            url "https://identitydivision.pkgs.visualstudio.com/_packaging/AndroidADAL/maven/v1"
+            credentials {
+                username System.getenv("ENV_VSTS_MVN_ANDROIDADAL_USERNAME") != null ? System.getenv("ENV_VSTS_MVN_ANDROIDADAL_USERNAME") : project.findProperty("vstsUsername")
+                password System.getenv("ENV_VSTS_MVN_ANDROIDADAL_ACCESSTOKEN") != null ? System.getenv("ENV_VSTS_MVN_ANDROIDADAL_ACCESSTOKEN") : project.findProperty("vstsMavenAccessToken")
+            }
+        }
+        jcenter()
     }
 }
 
