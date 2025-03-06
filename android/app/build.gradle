@@ -59,7 +59,12 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1" // Updated to latest stable
 
     // Additional Microsoft Authentication Library dependency (uncomment if needed)
-    // implementation 'com.microsoft.identity.client:msal:4.5.0' // Latest MSAL version
+    implementation("com.microsoft.identity.client:msal:4.10.0") {
+        exclude(group : "io.opentelemetry")
+        exclude (group: 'com.microsoft.device.display')
+    }
+    implementation("io.opentelemetry:opentelemetry-api:1.18.0")
+    implementation("io.opentelemetry:opentelemetry-context:1.18.0")
 }
 
 apply from: 'capacitor.build.gradle'

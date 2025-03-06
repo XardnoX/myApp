@@ -2,59 +2,53 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-          
+
         <!-- Google Wallet API -->
-        <meta-data 
-            android:name="com.google.android.gms.wallet.api.enabled" 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDaD9IAwZQtaKoLJmVAtQodUdakn_xV8nU" />
+
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
 
         <!-- Main Activity -->
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
-            android:name=".MainActivity"
+            android:name="io.ionic.starter.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:exported="true">
 
-            <!-- Combined Intent Filters -->
+            <!-- Launcher -->
             <intent-filter>
-                <!-- Launcher -->
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
-                <!-- Firebase Auth Redirect -->
+            <!-- Firebase Auth Redirect -->
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="msauth"
+                    android:scheme="https"
                     android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/__/auth/handler" />
             </intent-filter>
         </activity>
-        <!--
-        <activity android:name="com.microsoft.identity.client.BrowserTabActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data
-                android:scheme="msauth"
-                android:host="MyApp"
-                android:path="/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D" />
-        </intent-filter>
-    </activity>
--->
 
-        <!-- Microsoft Identity Browser Activity -->
-        <activity 
+        <!-- Microsoft Identity Browser Activity (MSAL) -->
+       <activity 
             android:name="com.microsoft.identity.client.BrowserTabActivity"
             android:exported="true">
             <intent-filter>
@@ -63,10 +57,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="msauth"
-                    android:host="pokladna-b4647.firebaseapp.com"
-                    android:path="/2jmj7l5rSw0yVb%2FvlWAYKk%2FYBWk%3D" />
+                    android:host="io.ionic.com"
+                    android:path="/2jmj7l5rSw0yVb/vlWAYkK/YBwk=" />
             </intent-filter>
         </activity>
+
+
+
 
         <!-- File Provider -->
         <provider
