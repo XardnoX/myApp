@@ -45,6 +45,9 @@
                     android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/__/auth/handler" />
             </intent-filter>
+
+                <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing" android:value="true" />
+        
         </activity>
 
         <!-- Microsoft Identity Browser Activity (MSAL) -->
@@ -58,8 +61,10 @@
                 <data
                     android:scheme="msauth"
                     android:host="io.ionic.com"
-                    android:path="/2jmj7l5rSw0yVb/vlWAYkK/YBwk=" />
+                    android:path="/2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D" />
+
             </intent-filter>
+       
         </activity>
 
 
