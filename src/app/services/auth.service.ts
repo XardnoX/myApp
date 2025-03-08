@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { getAuth, signInWithPopup, OAuthProvider, UserCredential, getRedirectResult } from 'firebase/auth';
-import { PublicClientApplication, AccountInfo, RedirectRequest } from '@azure/msal-browser';
+import { PublicClientApplication, AccountInfo, RedirectRequest, BrowserAuthError } from '@azure/msal-browser';
 import { msalConfig } from 'src/msal.config';
+
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ export class AuthService {
   private userId: string | null = null;
   private msalInstance: PublicClientApplication;
   private account: AccountInfo | null = null;
+  private msalInitialized = false; // Add the missing initialization flag
 
   constructor(private firestore: AngularFirestore, private router: Router) {
     this.msalInstance = new PublicClientApplication(msalConfig);
@@ -20,9 +22,11 @@ export class AuthService {
 
   // Initialize MSAL and handle redirect if needed
   private async initializeMsal() {
-    await this.msalInstance.initialize();
-    if (!this.account) {
-        await this.handleMsalRedirect();
+    if (!this.msalInitialized) {
+      await this.msalInstance.initialize(); // Ensure MSAL is initialized
+      this.msalInitialized = true;
+      console.log('MSAL initialized successfully');
+      await this.handleMsalRedirect();
     }
   }
 
@@ -43,53 +47,66 @@ export class AuthService {
       console.error('Error during Microsoft login (Popup):', error);
     }
   }
-
   async loginWithMicrosoftAndroid() {
-    const loginRequest: RedirectRequest = {
-        scopes: ["User.Read"],
-        prompt: "select_account"
-    };
+    try {
+        // Ensure MSAL is initialized before attempting login
+        await this.initializeMsal(); 
 
-    const currentAccounts = this.msalInstance.getAllAccounts();
-    if (currentAccounts.length > 0) {
-        this.msalInstance.setActiveAccount(currentAccounts[0]);
-        this.router.navigate(["/notifications"]);
-        return;
+        const loginRequest: RedirectRequest = {
+            scopes: ["User.Read"],
+            prompt: "select_account"
+        };
+
+        const currentAccounts = this.msalInstance.getAllAccounts();
+        if (currentAccounts.length > 0) {
+            this.msalInstance.setActiveAccount(currentAccounts[0]);
+            this.router.navigate(["/notifications"]);
+            return;
+        }
+
+        console.log('MSAL initialized, starting login redirect...');
+        await this.msalInstance.loginRedirect(loginRequest);
+    } catch (error) {
+        console.error('Error during Microsoft login (Android):', error);
     }
-
-    await this.msalInstance.loginRedirect(loginRequest);
 }
+
+
 
 // Ensure handleRedirectPromise is called correctly
-private async handleMsalRedirect() {
-    try {
-        const response = await this.msalInstance.handleRedirectPromise();
-        
-        if (response?.account) {
-            this.account = response.account;
-            localStorage.setItem("msalAccount", JSON.stringify(response.account));
-            this.msalInstance.setActiveAccount(response.account);
-            this.router.navigate(["/notifications"]);
-        }
-    } catch (error) {
-        console.error("Error handling MSAL redirect:", error);
-    }
+async handleMsalRedirect() {
+  try {
+      const response = await this.msalInstance.handleRedirectPromise();
+
+      if (response?.account) {
+          this.account = response.account;
+          localStorage.setItem('msalAccount', JSON.stringify(response.account));
+          this.msalInstance.setActiveAccount(response.account);
+          this.router.navigate(['/notifications']);
+      } else {
+          console.warn('No account found in MSAL redirect response');
+      }
+  } catch (error) {
+      console.error('Error handling MSAL redirect:', error);
+  }
 }
+
+
 
 
 async checkRedirectResult() {
-  const auth = getAuth();
   try {
-    const result: UserCredential | null = await getRedirectResult(auth);
+    const auth = getAuth();
+    const result = await getRedirectResult(auth);
 
-    if (result && result.user) {
-      console.log(' Login successful via Firebase redirect');
+    if (result?.user) {
+      console.log('Login successful via Firebase redirect');
       await this.handleLoginSuccess(result.user);
     } else {
       console.warn('No user returned from Firebase redirect');
     }
   } catch (error) {
-    console.error('❌ Error handling Firebase redirect result:', error);
+    console.error('Error handling Firebase redirect result:', error);
   }
 }
 
@@ -106,9 +123,8 @@ async checkRedirectResult() {
       if (userSnapshot?.empty === false) {
         const userDoc = userSnapshot.docs[0];
         const userData = userDoc.data() as { class: string };
-        this.userId = userDoc.id;
 
-        localStorage.setItem('userId', this.userId);
+        localStorage.setItem('userId', userDoc.id);
         localStorage.setItem('userClass', userData.class);
 
         this.router.navigate([`/notifications/${userData.class}`]);

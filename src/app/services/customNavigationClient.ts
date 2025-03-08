@@ -9,7 +9,7 @@ export class CustomNavigationClient extends NavigationClient {
   }
 
   override async navigateExternal(url: string, options: any) {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() || window.hasOwnProperty('cordova')) {
       const browser = this.iab.create(url, '_blank', {
         location: 'yes',
         clearcache: 'yes',
@@ -20,9 +20,14 @@ export class CustomNavigationClient extends NavigationClient {
       });
 
       browser.on('loadstart').subscribe(event => {
-        if (event.url.startsWith('msauth://io.ionic.com')) {
+        if (event.url.startsWith('msauth://io.ionic.com') || event.url.includes('#state')) {
           browser.close();
-          window.location.href = event.url;
+          let redirectUrl = event.url;
+          if (event.url.includes('#state')) {
+            const domain = event.url.split('#')[0];
+            redirectUrl = event.url.replace(domain, 'http://localhost/msal-login');
+          }
+          window.location.href = redirectUrl;
         }
       });
     } else {
