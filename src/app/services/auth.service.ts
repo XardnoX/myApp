@@ -4,11 +4,19 @@ import { Router } from '@angular/router';
 import { getAuth, signInWithPopup, OAuthProvider, UserCredential, getRedirectResult } from 'firebase/auth';
 import { PublicClientApplication, AccountInfo, RedirectRequest, BrowserAuthError } from '@azure/msal-browser';
 import { msalConfig } from 'src/msal.config';
+import { MsAuthPlugin } from '@recognizebv/capacitor-plugin-msauth';
 
+interface MsAuthResult {
+    accessToken: string;
+    account?: {
+        username?: string;
+    };
+}
 
 @Injectable({
   providedIn: 'root',
 })
+
 export class AuthService {
   private userId: string | null = null;
   private msalInstance: PublicClientApplication;
@@ -49,27 +57,26 @@ export class AuthService {
   }
   async loginWithMicrosoftAndroid() {
     try {
-        // Ensure MSAL is initialized before attempting login
-        await this.initializeMsal(); 
+        console.log('Starting Microsoft authentication using MsAuthPlugin...');
+        const result = await MsAuthPlugin.login({
+          clientId: '8117fe5b-a44f-42a2-89c3-f40bc9076356',
+          scopes: ['user.read']
+        }) as MsAuthResult;
+        const accessToken = result.accessToken;
+        console.log('Access Token obtained:', accessToken);
 
-        const loginRequest: RedirectRequest = {
-            scopes: ["User.Read"],
-            prompt: "select_account"
-        };
+        const email = result.account?.username;
 
-        const currentAccounts = this.msalInstance.getAllAccounts();
-        if (currentAccounts.length > 0) {
-            this.msalInstance.setActiveAccount(currentAccounts[0]);
-            this.router.navigate(["/notifications"]);
-            return;
-        }
-
-        console.log('MSAL initialized, starting login redirect...');
-        await this.msalInstance.loginRedirect(loginRequest);
-    } catch (error) {
-        console.error('Error during Microsoft login (Android):', error);
-    }
+        if (email) {
+          this.handleLoginSuccess(email);
+      } else {
+          alert('No email found for the logged-in user.');
+      }
+  } catch (error) {
+      console.error('Error during Microsoft login (MsAuthPlugin):', error);
+  }
 }
+
 
 
 
