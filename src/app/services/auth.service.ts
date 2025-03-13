@@ -5,9 +5,17 @@ import { getAuth, signInWithPopup, OAuthProvider, UserCredential, getRedirectRes
 import { PublicClientApplication, AccountInfo, RedirectRequest, AuthenticationResult } from '@azure/msal-browser';
 import { msalConfig } from 'src/msal.config';
 
+interface MsAuthResult {
+    accessToken: string;
+    account?: {
+        username?: string;
+    };
+}
+
 @Injectable({
   providedIn: 'root',
 })
+
 export class AuthService {
   private userId: string | null = null;
   private msalInstance: PublicClientApplication;
@@ -54,7 +62,6 @@ export class AuthService {
       this.router.navigate(['/home']); // Fallback route
     }
   }
-
   async loginWithMicrosoftAndroid() {
     const loginRequest: RedirectRequest = {
       scopes: ["User.Read"],
@@ -171,9 +178,8 @@ export class AuthService {
       if (userSnapshot?.empty === false) {
         const userDoc = userSnapshot.docs[0];
         const userData = userDoc.data() as { class: string };
-        this.userId = userDoc.id;
 
-        localStorage.setItem('userId', this.userId);
+        localStorage.setItem('userId', userDoc.id);
         localStorage.setItem('userClass', userData.class);
 
         this.router.navigate([`/notifications/${userData.class}`]);

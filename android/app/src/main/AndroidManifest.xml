@@ -52,6 +52,7 @@
                 android:host="io.ionic.com"
                 android:path="/5mCAxrHN2386pwqP/GQEY2lIvnw=" />
             </intent-filter>
+       
         </activity>
 
         <!-- Microsoft Identity Browser Activity (MSAL) -->
