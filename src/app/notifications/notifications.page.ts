@@ -48,7 +48,6 @@ export class NotificationsPage implements OnInit {
         return;
       }
   
-      // Load widgets for the userClass
       this.loadWidgetsForClass(this.userClass);
     } catch (error) {
       console.error('Error initializing NotificationsPage:', error);
@@ -114,7 +113,7 @@ export class NotificationsPage implements OnInit {
             const widgetId = widget.id;
             const userWidgetData = await this.widgetsService.getUserWidgetData(this.userId!, widgetId);
   
-            // Convert Firestore Timestamp to JavaScript Date
+           
             const start = widget.start.toDate ? widget.start.toDate() : new Date(widget.start);
             const end = widget.end.toDate ? widget.end.toDate() : new Date(widget.end);
   
@@ -146,7 +145,6 @@ export class NotificationsPage implements OnInit {
         })
       );
   
-      // Filter out widgets that are "over" and paid
       const filteredWidgets = mergedWidgets.filter((widget) => {
         const today = new Date();
         return !(today > widget.end && widget.paid);
@@ -168,17 +166,17 @@ export class NotificationsPage implements OnInit {
   
   async deleteWidget(widgetId: string) {
     try {
-      // Confirm delete
+     
       const confirmDelete = confirm('Opravdu chcete tento widget smazat?');
       if (!confirmDelete) return;
   
-      // Delete the widget from the "widgets" collection
+     
       await this.widgetsService.deleteWidget(widgetId);
   
-      // Delete all relations for the widget in "user_has_widgets"
+    
       await this.widgetsService.deleteWidgetRelations(widgetId);
   
-      // Remove the widget from the UI
+  
       this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
   
       console.log(`Widget ${widgetId} and its relations have been deleted.`);
@@ -204,14 +202,14 @@ export class NotificationsPage implements OnInit {
     const today = new Date().getTime();
   
     if (today < start) {
-      return 0; // Not started yet
+      return 0;
     } else if (today > end) {
-      return 1; // Already ended
+      return 1; 
     }
   
-    const totalDuration = end - start; // Total time between start and end
-    const elapsed = today - start; // Time elapsed since start
-    return elapsed / totalDuration; // Progress as a fraction
+    const totalDuration = end - start; 
+    const elapsed = today - start; 
+    return elapsed / totalDuration; 
   }
 
 
@@ -231,11 +229,11 @@ export class NotificationsPage implements OnInit {
     const today = new Date().getTime();
   
     if (today > end) {
-      return 0; // Already ended
+      return 0;
     }
   
-    const msPerDay = 24 * 60 * 60 * 1000; // Milliseconds in a day
-    return Math.ceil((end - today) / msPerDay); // Days remaining
+    const msPerDay = 24 * 60 * 60 * 1000;
+    return Math.ceil((end - today) / msPerDay); 
   }
 }
 

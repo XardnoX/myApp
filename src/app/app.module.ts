@@ -19,46 +19,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserActionModalComponent } from './modals/user-action-modal/user-action-modal.component';
 
-// ✅ Import MSAL (Microsoft Authentication)
-import { MsalModule, MsalService, MsalGuard, MsalBroadcastService, MSAL_INSTANCE, MSAL_GUARD_CONFIG, MsalRedirectComponent } from '@azure/msal-angular';
-import { PublicClientApplication, InteractionType, BrowserCacheLocation } from '@azure/msal-browser';
-import { msalConfig } from 'src/msal.config';
-import { CustomNavigationClient } from 'src/app/services/customNavigationClient';
-import { MsalGuardConfiguration, MsalInterceptorConfiguration } from '@azure/msal-angular';
-
-// ✅ Import Cordova InAppBrowser
-import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
-
-// ✅ MSAL Instance Provider
-export function MSALInstanceFactory() {
-  const msalInstance = new PublicClientApplication(msalConfig);
-  msalInstance.setNavigationClient(new CustomNavigationClient(new InAppBrowser()));
-  return msalInstance;
-}
-
-// ✅ MSAL Guard Config
-export function MSALGuardConfigFactory(): MsalGuardConfiguration {
-  return {
-    interactionType: InteractionType.Redirect,
-    authRequest: {
-      scopes: ['User.Read'],
-    },
-  };
-}
-
-// ✅ MSAL Interceptor Config (Optional)
-export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-  return {
-    interactionType: InteractionType.Redirect,
-    protectedResourceMap: new Map([
-      ['https://graph.microsoft.com/v1.0/me', ['User.Read']],
-    ]),
-  };
-}
+import { AuthGuard } from './services/auth.guard'; // Import the new AuthGuard
 
 @NgModule({
   declarations: [
-    AppComponent, 
+    AppComponent,
     WidgetUsersModalComponent,
     UserActionModalComponent,
   ],
@@ -66,29 +31,19 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig),  
+    AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    HttpClientModule,  
-    CommonModule,  
+    HttpClientModule,
+    CommonModule,
     FormsModule,
-    MsalModule.forRoot(
-      MSALInstanceFactory(),
-      MSALGuardConfigFactory(),
-      MSALInterceptorConfigFactory()
-    ),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     PaidService,
     WidgetsService,
-    { provide: MSAL_INSTANCE, useFactory: MSALInstanceFactory },
-    { provide: MSAL_GUARD_CONFIG, useFactory: MSALGuardConfigFactory },
-    MsalService,
-    MsalGuard,
-    MsalBroadcastService,
-    InAppBrowser
+    AuthGuard, // Add AuthGuard to providers
   ],
-  bootstrap: [AppComponent, MsalRedirectComponent],
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

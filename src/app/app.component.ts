@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { App } from '@capacitor/app';
 import { Platform } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
-import { msalConfig } from '../msal.config';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-root',
@@ -11,47 +11,64 @@ import { msalConfig } from '../msal.config';
 })
 export class AppComponent implements OnInit {
   isDarkMode = false;
-  constructor(private platform: Platform, private authService: AuthService) {
+  private isProcessingRedirect = false;
+
+  constructor(
+    private platform: Platform,
+    private authService: AuthService
+  ) {
     this.initializeApp();
+  }
+
+  ngOnInit() {
+    console.log('App initialized');
+    // Check redirect result on web resume
+    if (!Capacitor.isNativePlatform()) {
+      window.addEventListener('focus', async () => {
+        if (!this.isProcessingRedirect) {
+          this.isProcessingRedirect = true;
+          console.log('Window focused (web), checking redirect result...');
+          await this.authService.checkRedirectResult(true).catch(error => {
+            console.error('Error handling redirect result on web resume:', error);
+          });
+          this.isProcessingRedirect = false;
+        }
+      });
+    }
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      console.log('Platform ready');
-      this.setupDeepLinkListener();
-    }).catch(err => console.error('Platform ready error:', err));
-  }
+      console.log('Platform ready, setting up listeners...');
+      if (Capacitor.isNativePlatform()) {
+        App.addListener('appStateChange', async (state) => {
+          if (state.isActive && !this.isProcessingRedirect) {
+            this.isProcessingRedirect = true;
+            console.log('App resumed, checking redirect result with delay...');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await this.authService.checkRedirectResult(true).catch(error => {
+              console.error('Error handling redirect result on resume:', error);
+            });
+            this.isProcessingRedirect = false;
+          }
+        }).catch(error => console.error('Error adding appStateChange listener:', error));
 
-  ngOnInit() {
-    App.addListener('appUrlOpen', async (event) => {
-      console.log('appUrlOpen event:', event);
-      if (event.url.startsWith(msalConfig.auth.redirectUri)) {
-        console.log('Handling redirect with URL:', event.url);
-        await this.authService.handleMsalRedirect(event.url);
-      } else {
-        console.log('URL does not match redirectUri:', event.url);
+        App.addListener('appUrlOpen', async (data) => {
+          console.log('App URL opened:', data.url);
+          if (data.url.includes('firebaseapp.com/__/auth/handler') && !this.isProcessingRedirect) {
+            this.isProcessingRedirect = true;
+            console.log('Firebase redirect detected, processing with delay...');
+            await new Promise(resolve => setTimeout(resolve, 500));
+            await this.authService.checkRedirectResult(true).catch(error => {
+              console.error('Error handling deep link redirect:', error);
+            });
+            this.isProcessingRedirect = false;
+          } else if (data.url.includes('msauth://')) {
+            console.warn('Unexpected MSAL redirect detected:', data.url);
+          }
+        }).catch(error => console.error('Error adding appUrlOpen listener:', error));
       }
-    }).catch(err => console.error('Failed to add appUrlOpen listener:', err));
-  }
-
-  private setupDeepLinkListener() {
-    App.addListener('appUrlOpen', async (event) => {
-      console.log('App URL Open event triggered:', event.url);
-      if (event.url.startsWith(msalConfig.auth.redirectUri)) {
-        console.log('Redirect URL matches, passing to handleMsalRedirect');
-        await this.authService.handleMsalRedirect(event.url);
-      } else {
-        console.log('URL does not match redirectUri:', msalConfig.auth.redirectUri);
-      }
-    }).catch(err => console.error('Failed to add appUrlOpen listener:', err));
-
-    App.addListener('appStateChange', async (state) => {
-      console.log('App state changed:', state);
-      if (state.isActive) {
-        console.log('App resumed, checking MSAL redirect...');
-        await this.authService.handleMsalRedirect();
-      }
-    }).catch(err => console.error('Failed to add appStateChange listener:', err));
+    }).catch(error => console.error('Error with platform.ready:', error));
   }
 
   toggleTheme() {
