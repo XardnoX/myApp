@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-
+import { MsalGuard } from '@azure/msal-angular';
 const routes: Routes = [
   {
     path: 'home',
@@ -13,14 +13,17 @@ const routes: Routes = [
   },
   {
     path: 'notifications/:userClass',
-    loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsPageModule)
+    loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsPageModule),
+    canActivate: [MsalGuard],
   },
   {
     path: 'tables',
     loadChildren: () => import('./tables/tables.module').then( m => m.TablesPageModule)
-  },  {
+  },
+  {
     path: 'add-widget',
-    loadChildren: () => import('./add-widget/add-widget.module').then( m => m.AddWidgetPageModule)
+    loadChildren: () => import('./add-widget/add-widget.module').then( m => m.AddWidgetPageModule),
+    canActivate: [MsalGuard],
   },
 
   
