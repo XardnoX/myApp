@@ -44,6 +44,14 @@ export class CustomNavigationClient extends NavigationClient {
       browser.on('exit').subscribe(() => {
         console.log('InAppBrowser exited');
       });
+
+      browser.on('loaderror').subscribe(error => {
+        console.error('InAppBrowser loaderror:', error);
+      });
+
+      browser.on('exit').subscribe(() => {
+        console.log('InAppBrowser exited');
+      });
     } else {
       if (options.noHistory) {
         window.location.replace(url);
