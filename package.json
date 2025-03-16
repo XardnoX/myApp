@@ -49,6 +49,7 @@
     "jsonwebtoken": "^9.0.2",
     "monaco-editor": "^0.52.2",
     "mysql": "^2.18.1",
+    "ngx-papaparse": "^8.0.0",
     "react-csv-reader": "^4.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

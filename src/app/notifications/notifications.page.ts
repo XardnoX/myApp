@@ -7,10 +7,7 @@ import { WidgetsService } from '../services/widgets.service';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ThemeService } from '../services/theme.service';
-interface UserWidgetData {
-  paid: boolean;
-  owe: boolean;
-}
+
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',

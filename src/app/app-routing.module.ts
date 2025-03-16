@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './services/auth.guard'; // Import the new AuthGuard
+import { AuthGuard } from './services/auth.guard';
 
 const routes: Routes = [
   {
@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: 'notifications/:userClass',
     loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsPageModule),
-    canActivate: [AuthGuard], // Replace MsalGuard with AuthGuard
+    canActivate: [AuthGuard],
   },
   {
     path: 'tables',
@@ -24,9 +24,14 @@ const routes: Routes = [
   {
     path: 'add-widget',
     loadChildren: () => import('./add-widget/add-widget.module').then(m => m.AddWidgetPageModule),
-    canActivate: [AuthGuard], // Replace MsalGuard with AuthGuard
+    canActivate: [AuthGuard],
   },
-  // Add other routes as needed
+  {
+    path: 'upload-csv',
+    loadChildren: () => import('./upload-csv/upload-csv.module').then( m => m.UploadCsvPageModule),
+    canActivate: [AuthGuard],
+  },
+
 ];
 
 @NgModule({
