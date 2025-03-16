@@ -12,6 +12,7 @@ import { App } from '@capacitor/app';
 export class AppComponent implements OnInit {
   isDarkMode = false;
   private isProcessingRedirect = false;
+  private isFileInputActive = false; // New flag to track file input interaction
 
   constructor(
     private platform: Platform,
@@ -25,16 +26,33 @@ export class AppComponent implements OnInit {
     // Check redirect result on web resume
     if (!Capacitor.isNativePlatform()) {
       window.addEventListener('focus', async () => {
-        if (!this.isProcessingRedirect) {
+        if (!this.isProcessingRedirect && !this.isFileInputActive) {
           this.isProcessingRedirect = true;
           console.log('Window focused (web), checking redirect result...');
-          await this.authService.checkRedirectResult(true).catch(error => {
+          await this.authService.checkRedirectResult(false).catch(error => { // Change to false
             console.error('Error handling redirect result on web resume:', error);
           });
           this.isProcessingRedirect = false;
+        } else {
+          console.log('Skipping redirect check due to file input interaction');
         }
       });
     }
+
+    // Listen for file input focus/blur events globally
+    document.addEventListener('focus', (event) => {
+      if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
+        console.log('File input focused, setting isFileInputActive to true');
+        this.isFileInputActive = true;
+      }
+    }, true);
+
+    document.addEventListener('blur', (event) => {
+      if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
+        console.log('File input blurred, setting isFileInputActive to false');
+        this.isFileInputActive = false;
+      }
+    }, true);
   }
 
   initializeApp() {

@@ -20,7 +20,7 @@ export class AuthService {
 
       const result = await signInWithPopup(auth, provider);
       if (result.user) {
-        await this.handleLoginSuccess(result.user);
+        await this.handleLoginSuccess(result.user, true);
       }
     } catch (error) {
       alert('Při přihlašování nastala chyba. Zkuste to znovu.');
@@ -35,7 +35,7 @@ export class AuthService {
 
       const currentUser = auth.currentUser;
       if (currentUser) {
-        await this.handleLoginSuccess(currentUser);
+        await this.handleLoginSuccess(currentUser, true);
         return;
       }
 
@@ -45,7 +45,7 @@ export class AuthService {
       if (window.location.hostname === 'localhost' || window.location.protocol === 'http:') {
         const result = await signInWithPopup(auth, provider);
         if (result.user) {
-          await this.handleLoginSuccess(result.user);
+          await this.handleLoginSuccess(result.user, true);
         }
       } else {
         await signInWithRedirect(auth, provider);
@@ -63,7 +63,7 @@ export class AuthService {
 
       if (result && (result as any).user) {
         const user = (result as any).user;
-        await this.handleLoginSuccess(user);
+        await this.handleLoginSuccess(user, true); // Redirect after successful login
       } else if (!isInitialCheck) {
         if (result && (result as any)._tokenResponse) {
           if ((result as any)._tokenResponse.error) {
@@ -72,9 +72,15 @@ export class AuthService {
         } else {
           const currentUser = auth.currentUser;
           if (currentUser) {
-            await this.handleLoginSuccess(currentUser);
+            await this.handleLoginSuccess(currentUser, false); // Skip redirect if already logged in
           } else {
-            this.router.navigate(['/home']);
+            // Only navigate to /home if not on a protected route
+            const currentPath = this.router.url;
+            if (!currentPath || currentPath === '/home' || currentPath === '/login') {
+              this.router.navigate(['/home']);
+            } else {
+              console.log('User not authenticated, but on protected route, skipping navigation:', currentPath);
+            }
           }
         }
       } else {
@@ -82,12 +88,21 @@ export class AuthService {
         await this.checkRedirectResult(false);
       }
     } catch (error: any) {
-      alert('Při přihlašování nastala chyba. Zkuste to znovu.');
-      this.router.navigate(['/home']);
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        // Only show alert and navigate to /home if the user is not logged in
+        alert('Při přihlašování nastala chyba. Zkuste to znovu.');
+        const currentPath = this.router.url;
+        if (!currentPath || currentPath === '/home' || currentPath === '/login') {
+          this.router.navigate(['/home']);
+        }
+      } else {
+        console.warn('Error during checkRedirectResult, but user is logged in, skipping navigation:', error);
+      }
     }
   }
 
-  private async handleLoginSuccess(user: any) {
+  private async handleLoginSuccess(user: any, redirect: boolean = false) {
     const email = user.email;
 
     if (email) {
@@ -106,18 +121,27 @@ export class AuthService {
 
         if (userClass) {
           localStorage.setItem('userClass', userClass);
-          this.router.navigate([`/notifications/${userClass}`]);
+          // Only redirect if explicitly requested (e.g., after login)
+          if (redirect) {
+            this.router.navigate([`/notifications/${userClass}`]);
+          }
         } else {
           alert('U uživatele chybí třída(class), kontaktujte správce');
-          this.router.navigate(['/home']);
+          if (redirect) {
+            this.router.navigate(['/home']);
+          }
         }
       } else {
         alert('Uživatel nebyl nalezen v databázi');
-        this.router.navigate(['/home']);
+        if (redirect) {
+          this.router.navigate(['/home']);
+        }
       }
     } else {
-      alert('Nebyl nalzezen email, který by se shodoval s uživatelem.');
-      this.router.navigate(['/home']);
+      alert('Nebyl nalezen email, který by se shodoval s uživatelem.');
+      if (redirect) {
+        this.router.navigate(['/home']);
+      }
     }
   }
 
