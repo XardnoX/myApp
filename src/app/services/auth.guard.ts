@@ -26,7 +26,6 @@ export class AuthGuard implements CanActivate {
           if (newUser) {
             resolve(true);
           } else {
-            console.warn('User not authenticated, redirecting to /home');
             resolve(this.router.createUrlTree(['/home']));
           }
           if (this.unsubscribeAuth) {
@@ -34,7 +33,6 @@ export class AuthGuard implements CanActivate {
             this.unsubscribeAuth = null;
           }
         }, (error) => {
-          console.error('Auth state error:', error);
           resolve(this.router.createUrlTree(['/home']));
           if (this.unsubscribeAuth) {
             this.unsubscribeAuth();

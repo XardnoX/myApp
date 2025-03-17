@@ -63,7 +63,7 @@ export class AuthService {
 
       if (result && (result as any).user) {
         const user = (result as any).user;
-        await this.handleLoginSuccess(user, true); // Redirect after successful login
+        await this.handleLoginSuccess(user, true);
       } else if (!isInitialCheck) {
         if (result && (result as any)._tokenResponse) {
           if ((result as any)._tokenResponse.error) {
@@ -72,15 +72,9 @@ export class AuthService {
         } else {
           const currentUser = auth.currentUser;
           if (currentUser) {
-            await this.handleLoginSuccess(currentUser, false); // Skip redirect if already logged in
+            await this.handleLoginSuccess(currentUser, false);
           } else {
-            // Only navigate to /home if not on a protected route
-            const currentPath = this.router.url;
-            if (!currentPath || currentPath === '/home' || currentPath === '/login') {
-              this.router.navigate(['/home']);
-            } else {
-              console.log('User not authenticated, but on protected route, skipping navigation:', currentPath);
-            }
+              this.router.navigate(['/home']); 
           }
         }
       } else {
@@ -90,15 +84,10 @@ export class AuthService {
     } catch (error: any) {
       const currentUser = auth.currentUser;
       if (!currentUser) {
-        // Only show alert and navigate to /home if the user is not logged in
         alert('Při přihlašování nastala chyba. Zkuste to znovu.');
         const currentPath = this.router.url;
-        if (!currentPath || currentPath === '/home' || currentPath === '/login') {
           this.router.navigate(['/home']);
-        }
-      } else {
-        console.warn('Error during checkRedirectResult, but user is logged in, skipping navigation:', error);
-      }
+      } 
     }
   }
 
@@ -121,7 +110,6 @@ export class AuthService {
 
         if (userClass) {
           localStorage.setItem('userClass', userClass);
-          // Only redirect if explicitly requested (e.g., after login)
           if (redirect) {
             this.router.navigate([`/notifications/${userClass}`]);
           }
@@ -144,7 +132,6 @@ export class AuthService {
       }
     }
   }
-
   async logout() {
     const auth = getAuth();
     await auth.signOut();
@@ -156,7 +143,6 @@ export class AuthService {
 
     this.router.navigate(['/home']);
   }
-
   getUserId(): string | null {
     if (!this.userId) {
       this.userId = localStorage.getItem('userId');

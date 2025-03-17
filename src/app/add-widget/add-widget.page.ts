@@ -33,11 +33,11 @@ export class AddWidgetPage {
       this.userClass = localStorage.getItem('userClass') ?? undefined;
 
       if (!this.userClass) {
-        console.error('User class not found in localStorage.');
+        console.error('Třída uživatele nebyla nalezena v localStorage');
         return;
       }
     } catch (error) {
-      console.error('Error during ngOnInit:', error);
+      console.error('Chyba:', error);
     }
   }
   toggleTheme() {
@@ -60,11 +60,11 @@ export class AddWidgetPage {
     try {
       const userClass = localStorage.getItem('userClass');
       if (!userClass) {
-        throw new Error('User class not found in localStorage.');
+        throw new Error('třída uživatele nenalezena v localStorage.');
       }
 
       if (!this.widgetName || !this.widgetPrice || !this.endDate) {
-        alert('Please fill in all required fields: Name, Price, and End Date.');
+        alert('Prosím vyplňte všechny požadované pole: název, cenu a datum ukončení.');
         return;
       }
 
@@ -74,7 +74,7 @@ export class AddWidgetPage {
       const formattedEnd = this.setTimeTo(this.endDate, 23, 59);
 
       if (new Date(formattedEnd) <= new Date(formattedStart)) {
-        alert('End date must be after the start date.');
+        alert('Datum ukončení musí být po datu začátku.');
         return;
       }
 
@@ -84,7 +84,7 @@ export class AddWidgetPage {
         .toPromise();
 
       if (!usersSnapshot || usersSnapshot.empty) {
-        throw new Error('No users found for the class.');
+        throw new Error('Nebyl naležen žádny uživatel pro třídu');
       }
 
       const widgetDoc = await this.firestore.collection('widgets').add({
@@ -97,7 +97,7 @@ export class AddWidgetPage {
         full_paid: false
       });
 
-      console.log('Widget created with ID:', widgetDoc.id);
+      console.log('Akce vytvořena s ID:', widgetDoc.id);
 
   
       const batch = this.firestore.firestore.batch();
@@ -116,15 +116,15 @@ export class AddWidgetPage {
 
       await batch.commit();
 
-      console.log('Relationships created successfully.');
-      alert('Widget and relationships created successfully!');
+      console.log('akce a vztahy mezi uživateli a akcemi byly přidány úspěšně.');
+      alert('akce a vztahy mezi uživateli a akcemi byly přidány úspěšně.');
 
       this.resetFormFields();
       this.router.navigate([`/notifications/${userClass}`]);
 
     } catch (error) {
-      console.error('Error creating widget:', error);
-      alert('Error creating widget. Check console for details.');
+      console.error('Chyba při vytváření akce.', error);
+      alert('Chyba vytváření akce.');
     }
   }
 

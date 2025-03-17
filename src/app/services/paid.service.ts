@@ -11,7 +11,6 @@ interface Widget {
   providedIn: 'root',
 })
 export class PaidService {
-  private apiUrl = 'http://localhost:8100';
   constructor(private firestore: AngularFirestore, private http: HttpClient) {}
   
   getUsersForWidget(widgetId: string): Observable<any[]> {
@@ -50,7 +49,6 @@ export class PaidService {
               );
           });
   
-
           return combineLatest(userRequests.length ? userRequests : [of([])]);
         })
       );
@@ -77,11 +75,10 @@ export class PaidService {
                     .doc(`widgets/${widgetId}`)
                     .update({ full_paid: allPaid })
                     .then(() => {
-                      console.log(`Widget ${widgetId} full_paid updated to ${allPaid}`);
+                      console.log(`Akce je nyní kompletně zaplacena`);
                       resolve();
                     })
                     .catch((error) => {
-                      console.error(`Error updating full_paid for widget ${widgetId}:`, error);
                       reject(error);
                     });
                 } else {
@@ -94,7 +91,7 @@ export class PaidService {
             });
         },
         (error) => {
-          console.error(`Error fetching users for widget ${widgetId}:`, error);
+          console.error(`Chyba při načítání relací pro ${widgetId}:`, error);
           reject(error);
         }
       );

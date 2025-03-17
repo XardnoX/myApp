@@ -46,18 +46,18 @@ export class UploadCsvPage implements OnInit {
       this.userClass = localStorage.getItem('userClass') ?? undefined;
 
       if (!this.userId) {
-        console.error('User ID not found in localStorage.');
+        console.error('User ID nebylo nalezeno localStorage');
         return;
       }
 
       if (!this.userClass) {
-        console.error('User class not found in localStorage.');
+        console.error('User class nebyla nalezena localStorage');
         return;
       }
 
       await this.loadRoles();
     } catch (error) {
-      console.error('Error initializing UploadCsvPage:', error);
+      console.error('Chyba při vkládání souboru:', error);
     }
   }
 
@@ -94,7 +94,7 @@ export class UploadCsvPage implements OnInit {
         });
       }
     } catch (error) {
-      console.error('Error loading roles:', error);
+      console.error('Chyba při načítení rolí:', error);
       this.uploadMessage = 'Chyba při načítání rolí: ' + error;
       this.uploadMessageType = 'danger';
     }
@@ -103,15 +103,13 @@ export class UploadCsvPage implements OnInit {
   onFileSelected(event: any) {
     event.preventDefault();
     event.stopPropagation();
-    console.log('File selected or canceled:', event.target.files, 'Current route:', window.location.pathname);
     this.selectedFile = event.target.files[0];
     this.uploadMessage = null;
   }
 
   async uploadCsv() {
-    console.log('Upload button clicked, selectedFile:', this.selectedFile, 'Current route:', window.location.pathname);
     if (!this.selectedFile) {
-      this.uploadMessage = 'Prosím vyberte CSV soubor.';
+      this.uploadMessage = 'Vyberte prosím CSV soubor.';
       this.uploadMessageType = 'danger';
       return;
     }
@@ -127,7 +125,6 @@ export class UploadCsvPage implements OnInit {
       this.uploadMessage = 'Chyba při nahrávání dat: ' + error;
       this.uploadMessageType = 'danger';
     }
-    console.log('Upload completed, current route:', window.location.pathname);
   }
 
   private readFile(file: File): Promise<string> {
@@ -163,8 +160,8 @@ export class UploadCsvPage implements OnInit {
 
     for (const row of data) {
       if (row.type === 'user') {
-        if (!row.class || !row.email || !row.first_name || !row.last_name) {
-          throw new Error('Chybí povinné pole class, email, first_name nebo last_name v řádku: ' + JSON.stringify(row));
+        if (!row.class || !row.email) {
+          throw new Error('Chybí povinné pole class, email v řádku: ' + JSON.stringify(row));
         }
 
         const userData = {

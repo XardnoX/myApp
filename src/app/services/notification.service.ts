@@ -15,7 +15,6 @@ export class NotificationService {
 
   async getFCMToken(): Promise<string | null> {
     if (!this.isSupportedPlatform()) {
-      console.warn('PushNotifications plugin is not supported on this platform.');
       return null;
     }
 
@@ -31,30 +30,27 @@ export class NotificationService {
           });
 
           PushNotifications.addListener('registrationError', (error: any) => {
-            console.error('Registration error:', error);
+            console.error('Chyba registrace upozornění:', error);
             reject(null);
           });
         });
       } else {
-        console.warn('Push notification permissions denied.');
         return null;
       }
     } catch (error) {
-      console.error('Error getting FCM token:', error);
+      console.error('Chyba při získávání FCM token:', error);
       return null;
     }
   }
 
   async requestNotificationPermissions() {
     if (!this.isSupportedPlatform()) {
-      console.warn('PushNotifications plugin is not supported on this platform.');
       return;
     }
 
     try {
       const permissionStatus = await PushNotifications.requestPermissions();
       if (permissionStatus.receive === 'granted') {
-        console.log('Push notification permissions granted.');
         await PushNotifications.register();
 
         PushNotifications.addListener('registration', (token) => {
@@ -62,49 +58,25 @@ export class NotificationService {
         });
 
         PushNotifications.addListener('registrationError', (error) => {
-          console.error('Registration error:', error);
+          console.error('Chyba registrace upozornění:', error);
         });
-      } else {
-        console.warn('Push notification permissions denied.');
-      }
+      } 
     } catch (error) {
-      console.error('Error requesting push notification permissions:', error);
+      console.error('Chyba při získávání povolení pro upozornění:', error);
     }
   }
 
   listenForMessages() {
     if (!this.isSupportedPlatform()) {
-      console.warn('PushNotifications plugin is not supported on this platform.');
       return;
     }
 
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Push notification received:', notification);
+      console.log('Povolení pro upozornění bylo získano:', notification);
     });
 
     PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      console.log('Push notification action performed:', action);
+      console.log(action);
     });
-  }
-
-  async requestWebNotificationPermissions() {
-    if (Capacitor.getPlatform() === 'web') {
-      try {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-          console.log('Web push notifications permissions granted.');
-        } else {
-          console.warn('Web push notifications permissions denied.');
-        }
-      } catch (error) {
-        console.error('Error requesting web notification permissions:', error);
-      }
-    }
-  }
-
-  showWebNotification(title: string, options?: NotificationOptions) {
-    if (Capacitor.getPlatform() === 'web' && Notification.permission === 'granted') {
-      new Notification(title, options);
-    }
   }
 }

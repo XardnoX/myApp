@@ -14,15 +14,15 @@
         <ion-list-header>
           <ion-label>Vyberte stav zaplacení:</ion-label>
         </ion-list-header>
-        <ion-item>
+        <ion-item button (click)="paymentStatus = 'paid'">
           <ion-label>Zaplaceno</ion-label>
           <ion-radio slot="start" value="paid"></ion-radio>
         </ion-item>
-        <ion-item>
+        <ion-item button (click)="paymentStatus = 'owe'">
           <ion-label>Dluh</ion-label>
           <ion-radio slot="start" value="owe"></ion-radio>
         </ion-item>
-        <ion-item>
+        <ion-item button (click)="paymentStatus = 'nic'">
           <ion-label>Nic</ion-label>
           <ion-radio slot="start" value="nic"></ion-radio>
         </ion-item>
