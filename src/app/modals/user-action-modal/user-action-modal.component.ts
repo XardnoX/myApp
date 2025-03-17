@@ -10,7 +10,7 @@ import { ThemeService } from '../../services/theme.service';
 export class UserActionModalComponent {
   @Input() userId!: string;
   @Input() widgetId!: string;
-  @Input() email!: string; // Add this line
+  @Input() email!: string;
   paymentStatus: 'paid' | 'owe' | 'nic' | null = null;
   isDarkMode = false;
   constructor(
@@ -20,12 +20,10 @@ export class UserActionModalComponent {
   ) {}
 
   ngOnInit() {
-    // Initialize dark mode state from ThemeService
     this.isDarkMode = this.themeService.isDark();
   }
   
   toggleTheme() {
-    // Toggle theme using ThemeService
     this.themeService.toggleTheme();
     this.isDarkMode = this.themeService.isDark();
   }
@@ -36,7 +34,7 @@ export class UserActionModalComponent {
 
   async applyChanges() {
     if (!this.paymentStatus) {
-      return; // No action taken if no selection
+      return;
     }
 
     let paid = false;

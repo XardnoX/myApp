@@ -19,7 +19,6 @@
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
 
-        <!-- Main Activity -->
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:name="io.ionic.com.MainActivity"
@@ -27,12 +26,12 @@
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTop"
             android:exported="true">
-            <!-- Launcher -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Firebase Auth Redirect -->
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -42,18 +41,14 @@
                     android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/__/auth/handler" />
             </intent-filter>
-            <!-- MSAL Redirect -->
        
         </activity>
 
-        <!-- Microsoft Identity Browser Activity (MSAL) -->
         <activity 
             android:name="com.microsoft.identity.client.BrowserTabActivity"
             android:exported="true">
-            <!-- No intent-filter needed here unless you have additional custom schemes -->
         </activity>
 
-        <!-- File Provider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -65,7 +60,6 @@
         </provider>
     </application>
 
-    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

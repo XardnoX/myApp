@@ -36,18 +36,18 @@ export class NotificationsPage implements OnInit {
       this.userClass = localStorage.getItem('userClass') ?? undefined;
   
       if (!this.userId) {
-        console.error('User ID not found in localStorage.');
+        console.error('User ID nebylo nalezeno v localStorage.');
         return;
       }
   
       if (!this.userClass) {
-        console.error('User class not found in localStorage.');
+        console.error('User class nebyla nalezena v localStorage.');
         return;
       }
   
       this.loadWidgetsForClass(this.userClass);
     } catch (error) {
-      console.error('Error initializing NotificationsPage:', error);
+      console.error(error);
     }
   }
   
@@ -69,7 +69,6 @@ export class NotificationsPage implements OnInit {
       .getWidgetsByClass(userClass)
       .subscribe(
         async (allWidgets: any[]) => {
-          console.log('Fetched Widgets:', allWidgets);
   
           for (const widget of allWidgets) {
             await this.paidService.checkAndSetFullPaidOnce(widget.id);
@@ -82,18 +81,15 @@ export class NotificationsPage implements OnInit {
           }
         },
         (error) => {
-          console.error('Error fetching widgets:', error);
+          console.error('Chyba při načítání akcí', error);
         }
       );
     
   }
-  
-  
 
   async mergeUserWidgetData(widgets: any[]): Promise<any[]> {
     try {
       if (!this.userId) {
-        console.warn('User ID is missing. Skipping merge.');
         return widgets.map((widget) => ({
           ...widget,
           paid: false,
@@ -110,7 +106,6 @@ export class NotificationsPage implements OnInit {
             const widgetId = widget.id;
             const userWidgetData = await this.widgetsService.getUserWidgetData(this.userId!, widgetId);
   
-           
             const start = widget.start.toDate ? widget.start.toDate() : new Date(widget.start);
             const end = widget.end.toDate ? widget.end.toDate() : new Date(widget.end);
   
@@ -129,7 +124,6 @@ export class NotificationsPage implements OnInit {
               daysRemaining,
             };
           } catch (error) {
-            console.error(`Error fetching data for widget ID: ${widget.id}`, error);
             return {
               ...widget,
               paid: false,
@@ -149,7 +143,6 @@ export class NotificationsPage implements OnInit {
   
       return filteredWidgets;
     } catch (error) {
-      console.error('Error in mergeUserWidgetData:', error);
       return widgets.map((widget) => ({
         ...widget,
         paid: false,
@@ -164,7 +157,7 @@ export class NotificationsPage implements OnInit {
   async deleteWidget(widgetId: string) {
     try {
      
-      const confirmDelete = confirm('Opravdu chcete tento widget smazat?');
+      const confirmDelete = confirm('Opravdu chcete tuhle akci smazat?');
       if (!confirmDelete) return;
   
      
@@ -176,7 +169,7 @@ export class NotificationsPage implements OnInit {
   
       this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
   
-      console.log(`Widget ${widgetId} and its relations have been deleted.`);
+      console.log(`Akce ${widgetId} a relace spojené s ní byly smazány.`);
     } catch (error) {
       console.error('Error deleting widget:', error);
     }

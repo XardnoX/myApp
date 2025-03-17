@@ -10,7 +10,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class WidgetUsersModalComponent implements OnInit {
   @Input() widgetId: string | null = null;
-  users: any[] = []; // Array to store user payment information
+  users: any[] = [];
   isDarkMode = false;
   constructor(private paidService: PaidService, private modalController: ModalController, private themeService: ThemeService) {}
   
@@ -26,10 +26,10 @@ export class WidgetUsersModalComponent implements OnInit {
   loadUsersForWidget(widgetId: string) {
     this.paidService.getUsersForWidget(widgetId).subscribe(
       (users) => {
-        this.users = users; // Store the combined data
+        this.users = users;
       },
       (error) => {
-        console.error('Error fetching users for widget:', error);
+        console.error('Chyba při spojování uživatelů a akcí', error);
       }
     );
   }
@@ -48,7 +48,6 @@ export class WidgetUsersModalComponent implements OnInit {
   }
   
   toggleTheme() {
-    // Toggle theme using ThemeService
     this.themeService.toggleTheme();
     this.isDarkMode = this.themeService.isDark();
   }

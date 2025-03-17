@@ -12,9 +12,6 @@ export class WidgetsService {
       const formattedUserId = `/users/${userId}`;
       const formattedWidgetId = `/widgets/${widgetId}`;
   
-      console.log('Formatted User ID:', formattedUserId);
-      console.log('Formatted Widget ID:', formattedWidgetId);
-  
       const userHasWidgetsRef = this.firestore.collection('user_has_widgets', (ref) =>
         ref
           .where('user_id', '==', formattedUserId)
@@ -25,14 +22,12 @@ export class WidgetsService {
   
       if (snapshot && !snapshot.empty) {
         const doc = snapshot.docs[0];
-        console.log('Document found:', doc.data());
         return { id: doc.id, ...(doc.data() as object) };
       } else {
-        console.warn(`No record found for user_id: ${formattedUserId} and widget_id: ${formattedWidgetId}`);
         return null;
       }
     } catch (error) {
-      console.error('Error fetching user_has_widgets data:', error);
+      console.error('Cyba při načítání spojených akcí s uživatelem', error);
       return null;
     }
   }
@@ -41,11 +36,9 @@ export class WidgetsService {
       return this.firestore
         .doc(`widgets/${widgetId}`)
         .delete()
-        .then(() => console.log(`Widget ${widgetId} deleted successfully.`))
-        .catch((error) => console.error('Error deleting widget:', error));
+        .catch((error) => console.error('Chyba při mazání akce:', error));
     }
   
-    // Delete all relations for a widget in "user_has_widgets"
     async deleteWidgetRelations(widgetId: string): Promise<void> {
       const relationsRef = this.firestore.collection('user_has_widgets', (ref) =>
         ref.where('widget_id', '==', `/widgets/${widgetId}`)
@@ -60,8 +53,7 @@ export class WidgetsService {
   
       return batch
         .commit()
-        .then(() => console.log(`Relations for widget ${widgetId} deleted successfully.`))
-        .catch((error) => console.error('Error deleting relations:', error));
+        .catch((error) => console.error('Chyba při mazání relací:', error));
     }
   }
 
