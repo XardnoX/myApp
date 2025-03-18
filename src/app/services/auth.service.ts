@@ -1,98 +1,95 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/compat/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { getAuth, signInWithPopup, signInWithRedirect, OAuthProvider, UserCredential, getRedirectResult, User } from 'firebase/auth';
+import { PublicClientApplication, InteractionRequiredAuthError, AccountInfo } from '@azure/msal-browser';
+import { Capacitor } from '@capacitor/core';
+import { App } from '@capacitor/app';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private userId: string | null = null;
+  private msalInstance: PublicClientApplication;
+  private isInitialized = false;
 
-  constructor(private firestore: AngularFirestore, private router: Router) {}
+  constructor(private firestore: AngularFirestore, private router: Router) {
+    this.msalInstance = new PublicClientApplication({
+      auth: {
+        clientId: '8117fe5b-a44f-42a2-89c3-f40bc9076356',
+        authority: 'https://login.microsoftonline.com/common',
+        redirectUri: Capacitor.isNativePlatform()
+          ? 'msauth://io.ionic.com/5mCAxrHN2386pwqP/GQEY2lIvnw='
+          : window.location.origin,
+      },
+      cache: {
+        cacheLocation: 'localStorage',
+        storeAuthStateInCookie: false,
+      },
+    });
+
+    this.initializeMSAL();
+  }
+
+  private async initializeMSAL() {
+    try {
+      await this.msalInstance.initialize();
+      this.isInitialized = true;
+      await this.msalInstance.handleRedirectPromise();
+    } catch (error) {
+      console.error('MSAL initialization error:', error);
+    }
+  }
+
+  async handleRedirectResult() {
+    if (!this.isInitialized) {
+      console.error('MSAL is not initialized yet');
+      return;
+    }
+    try {
+      const result = await this.msalInstance.handleRedirectPromise();
+      if (result && result.account) {
+        await this.handleLoginSuccess(result.account);
+      } else {
+        const accounts = this.msalInstance.getAllAccounts();
+        if (accounts.length > 0) {
+          await this.handleLoginSuccess(accounts[0]);
+        }
+      }
+    } catch (error) {
+      console.error('Redirect handling error:', error);
+    }
+  }
 
   async loginWithMicrosoft() {
-    try {
-      const auth = getAuth();
-      await auth.signOut();
-      const provider = new OAuthProvider('microsoft.com');
-      provider.setCustomParameters({ prompt: 'select_account' });
+    if (!this.isInitialized) {
+      console.error('MSAL is not initialized yet');
+      return;
+    }
 
-      const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        await this.handleLoginSuccess(result.user, true);
+    try {
+      const loginRequest = {
+        scopes: ['User.Read'],
+        prompt: 'select_account',
+      };
+
+      if (Capacitor.isNativePlatform()) {
+        await this.msalInstance.loginRedirect(loginRequest);
+      } else {
+        const result = await this.msalInstance.loginPopup(loginRequest);
+        if (result.account) {
+          await this.handleLoginSuccess(result.account);
+        }
       }
     } catch (error) {
+      console.error('Login error:', error);
       alert('Při přihlašování nastala chyba. Zkuste to znovu.');
       this.router.navigate(['/home']);
     }
   }
 
-  async loginWithMicrosoftAndroid() {
-    try {
-      const auth = getAuth();
-      await auth.signOut();
-
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        await this.handleLoginSuccess(currentUser, true);
-        return;
-      }
-
-      const provider = new OAuthProvider('microsoft.com');
-      provider.setCustomParameters({ prompt: 'select_account' });
-
-      if (window.location.hostname === 'localhost' || window.location.protocol === 'http:') {
-        const result = await signInWithPopup(auth, provider);
-        if (result.user) {
-          await this.handleLoginSuccess(result.user, true);
-        }
-      } else {
-        await signInWithRedirect(auth, provider);
-      }
-    } catch (error) {
-      alert('Při přihlašování nastala chyba. Zkuste to znovu.');
-      this.router.navigate(['/home']);
-    }
-  }
-
-  async checkRedirectResult(isInitialCheck = false) {
-    const auth = getAuth();
-    try {
-      const result: UserCredential | null = await getRedirectResult(auth);
-
-      if (result && (result as any).user) {
-        const user = (result as any).user;
-        await this.handleLoginSuccess(user, true);
-      } else if (!isInitialCheck) {
-        if (result && (result as any)._tokenResponse) {
-          if ((result as any)._tokenResponse.error) {
-            alert('Při přihlašování nastala chyba. Zkuste to znovu.');
-          }
-        } else {
-          const currentUser = auth.currentUser;
-          if (currentUser) {
-            await this.handleLoginSuccess(currentUser, false);
-          } else {
-              this.router.navigate(['/home']); 
-          }
-        }
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await this.checkRedirectResult(false);
-      }
-    } catch (error: any) {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        alert('Při přihlašování nastala chyba. Zkuste to znovu.');
-        const currentPath = this.router.url;
-          this.router.navigate(['/home']);
-      } 
-    }
-  }
-
-  private async handleLoginSuccess(user: any, redirect: boolean = false) {
-    const email = user.email;
+  private async handleLoginSuccess(account: AccountInfo) {
+    const email = account.username;
 
     if (email) {
       const userSnapshot = await this.firestore
@@ -110,39 +107,33 @@ export class AuthService {
 
         if (userClass) {
           localStorage.setItem('userClass', userClass);
-          if (redirect) {
-            this.router.navigate([`/notifications/${userClass}`]);
-          }
+          this.router.navigate([`/notifications/${userClass}`]);
         } else {
           alert('U uživatele chybí třída(class), kontaktujte správce');
-          if (redirect) {
-            this.router.navigate(['/home']);
-          }
+          this.router.navigate(['/home']);
         }
       } else {
         alert('Uživatel nebyl nalezen v databázi');
-        if (redirect) {
-          this.router.navigate(['/home']);
-        }
+        this.router.navigate(['/home']);
       }
     } else {
       alert('Nebyl nalezen email, který by se shodoval s uživatelem.');
-      if (redirect) {
-        this.router.navigate(['/home']);
-      }
+      this.router.navigate(['/home']);
     }
   }
+
   async logout() {
-    const auth = getAuth();
-    await auth.signOut();
-
-    this.userId = null;
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userClass');
-    localStorage.removeItem('msalAccount');
-
-    this.router.navigate(['/home']);
+    try {
+      this.userId = null;
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userClass');
+      localStorage.removeItem('msalAccount');
+      this.router.navigate(['/home']);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   }
+
   getUserId(): string | null {
     if (!this.userId) {
       this.userId = localStorage.getItem('userId');

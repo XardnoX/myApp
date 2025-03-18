@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
-    
+
     const userId = this.authService.getUserId();
     if (userId) {
       const userClass = localStorage.getItem('userClass');
@@ -33,12 +33,11 @@ export class HomePage implements OnInit {
         console.log('Role uživatele nebyla nalezena v localStorage');
       }
     }
-    
+
     if (isPlatform('android') || isPlatform('ios')) {
       this.notificationService.requestNotificationPermissions();
       this.notificationService.listenForMessages();
-    } 
-  
+    }
   }
 
   toggleTheme() {
@@ -46,13 +45,8 @@ export class HomePage implements OnInit {
     this.isDarkMode = this.themeService.isDark();
   }
 
-
   login() {
-    if (isPlatform('android')) {
-      this.authService.loginWithMicrosoftAndroid();
-    } else {
-      this.authService.loginWithMicrosoft();
-    }
+    this.authService.loginWithMicrosoft();
   }
 
   logout() {
