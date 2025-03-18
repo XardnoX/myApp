@@ -12,7 +12,6 @@ import { App } from '@capacitor/app';
 export class AppComponent implements OnInit {
   isDarkMode = false;
   private isProcessingRedirect = false;
-  private isFileInputActive = false; 
 
   constructor(
     private platform: Platform,
@@ -22,69 +21,25 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!Capacitor.isNativePlatform()) {
-      window.addEventListener('focus', async () => {
-
-        if (!this.isProcessingRedirect && !this.isFileInputActive) {
+    if (Capacitor.isNativePlatform()) {
+      App.addListener('appUrlOpen', async (data) => {
+        if (data.url.includes('msauth://') && !this.isProcessingRedirect) {
           this.isProcessingRedirect = true;
-
-          await this.authService.checkRedirectResult(false).catch(error => {
-            console.error(error);
-          });
-
+          await this.authService.handleRedirectResult();
           this.isProcessingRedirect = false;
         }
-      });
+      }).catch(error => console.error(error));
     }
-
-    document.addEventListener('focus', (event) => {
-
-      if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
-        this.isFileInputActive = true;
-      }
-    }, true);
-
-    document.addEventListener('blur', (event) => {
-
-      if (event.target instanceof HTMLInputElement && event.target.type === 'file') {
-        this.isFileInputActive = false;
-      }
-    }, true);
   }
+
   initializeApp() {
-
     this.platform.ready().then(() => {
-
       if (Capacitor.isNativePlatform()) {
         App.addListener('appStateChange', async (state) => {
-
           if (state.isActive && !this.isProcessingRedirect) {
             this.isProcessingRedirect = true;
-
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            await this.authService.checkRedirectResult(true).catch(error => {
-              console.error(error);
-            });
+            await this.authService.handleRedirectResult();
             this.isProcessingRedirect = false;
-          }
-        }).catch(error => console.error(error));
-
-        App.addListener('appUrlOpen', async (data) => {
-          console.log('App URL opened:', data.url);
-
-          if (data.url.includes('firebaseapp.com/__/auth/handler') && !this.isProcessingRedirect) {
-            this.isProcessingRedirect = true;
-
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            await this.authService.checkRedirectResult(true).catch(error => {
-              console.error(error);
-            });
-            this.isProcessingRedirect = false;
-           } 
-          else if (data.url.includes('msauth://')) {
-            console.warn('Chyba, neočekávaný MSAL redirect:', data.url);
           }
         }).catch(error => console.error(error));
       }
