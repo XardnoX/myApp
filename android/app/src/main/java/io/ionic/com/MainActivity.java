@@ -1,5 +1,6 @@
 package io.ionic.com;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.CookieManager;
 
@@ -11,7 +12,9 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
 
         CookieManager cookieManager = CookieManager.getInstance();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         cookieManager.setAcceptThirdPartyCookies(this.bridge.getWebView(), true);
-        cookieManager.setAcceptCookie(true);
+      }
+      cookieManager.setAcceptCookie(true);
     }
 }

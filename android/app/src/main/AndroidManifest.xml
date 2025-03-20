@@ -43,16 +43,16 @@
         </activity>
 
         <activity
-    android:name="com.capacitorcommunity.generic_oauth2.GenericOauth2Activity"
-    android:exported="true">
-    <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="capacitor" android:host="oauth2" android:path="/callback" />
-    </intent-filter>
-</activity>
-
+            android:name="com.capacitorcommunity.generic_oauth2.GenericOauth2Activity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="capacitor" android:host="oauth2" android:pathPrefix="/callback" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"
