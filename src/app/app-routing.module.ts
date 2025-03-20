@@ -13,7 +13,7 @@ const routes: Routes = [
     loadChildren: () => import('./home/home.module').then(m => m.HomePageModule),
   },
   {
-    path: 'notifications/:userClass',
+    path: 'notifications/:class',
     loadChildren: () => import('./notifications/notifications.module').then(m => m.NotificationsPageModule),
     canActivate: [AuthGuard],
   },
@@ -28,10 +28,13 @@ const routes: Routes = [
   },
   {
     path: 'upload-csv',
-    loadChildren: () => import('./upload-csv/upload-csv.module').then( m => m.UploadCsvPageModule),
+    loadChildren: () => import('./upload-csv/upload-csv.module').then(m => m.UploadCsvPageModule),
     canActivate: [AuthGuard],
   },
-
+  {
+    path: '**',
+    redirectTo: 'home',
+  },
 ];
 
 @NgModule({

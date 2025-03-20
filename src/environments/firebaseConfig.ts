@@ -10,7 +10,7 @@ export const firebaseConfig = {
   storageBucket: "pokladna-b4647.firebasestorage.app",
   messagingSenderId: "558550277315",
   appId: "1:558550277315:web:e679fe8e16b90aa8e1d676",
-  measurementId: "G-8F1Y3LG95Y"
+//  measurementId: "G-8F1Y3LG95Y"
 };
 
 // Initialize Firebase

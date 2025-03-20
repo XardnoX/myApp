@@ -1,124 +1,102 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
-import { PublicClientApplication, InteractionRequiredAuthError, AccountInfo } from '@azure/msal-browser';
 import { Capacitor } from '@capacitor/core';
-import { App } from '@capacitor/app';
+import { OAuth2AuthenticateOptions, GenericOAuth2 } from '@capacitor-community/generic-oauth2';
+import { firebaseConfig } from '../../environments/firebaseConfig';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private userId: string | null = null;
-  private msalInstance: PublicClientApplication;
-  private isInitialized = false;
 
   constructor(private firestore: AngularFirestore, private router: Router) {
-    this.msalInstance = new PublicClientApplication({
-      auth: {
-        clientId: '8117fe5b-a44f-42a2-89c3-f40bc9076356',
-        authority: 'https://login.microsoftonline.com/common',
-        redirectUri: Capacitor.isNativePlatform()
-          ? 'msauth://io.ionic.com/5mCAxrHN2386pwqP/GQEY2lIvnw='
-          : window.location.origin,
-      },
-      cache: {
-        cacheLocation: 'localStorage',
-        storeAuthStateInCookie: false,
-      },
+    this.firestore.firestore.enablePersistence().catch(err => {
+      console.error('Chyba při povolování perzistence Firestore:', err);
     });
-
-    this.initializeMSAL();
   }
 
-  private async initializeMSAL() {
-    try {
-      await this.msalInstance.initialize();
-      this.isInitialized = true;
-      await this.msalInstance.handleRedirectPromise();
-    } catch (error) {
-      console.error('MSAL initialization error:', error);
-    }
-  }
-
-  async handleRedirectResult() {
-    if (!this.isInitialized) {
-      console.error('MSAL is not initialized yet');
-      return;
-    }
-    try {
-      const result = await this.msalInstance.handleRedirectPromise();
-      if (result && result.account) {
-        await this.handleLoginSuccess(result.account);
-      } else {
-        const accounts = this.msalInstance.getAllAccounts();
-        if (accounts.length > 0) {
-          await this.handleLoginSuccess(accounts[0]);
-        }
-      }
-    } catch (error) {
-      console.error('Redirect handling error:', error);
-    }
+  private getAzureOAuth2Options(): OAuth2AuthenticateOptions {
+    return {
+      appId: '8117fe5b-a44f-42a2-89c3-f40bc9076356',
+      authorizationBaseUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+      accessTokenEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+      scope: 'User.Read email profile openid',
+      responseType: 'code',
+      pkceEnabled: true,
+      logsEnabled: true,
+      android: {
+        redirectUrl: 'capacitor://oauth2/callback',
+      },
+      web: {
+        redirectUrl: window.location.origin,
+        windowOptions: 'height=600,left=0,top=0',
+      },
+    };
   }
 
   async loginWithMicrosoft() {
-    if (!this.isInitialized) {
-      console.error('MSAL is not initialized yet');
-      return;
-    }
-
     try {
-      const loginRequest = {
-        scopes: ['User.Read'],
-        prompt: 'select_account',
-      };
-
-      if (Capacitor.isNativePlatform()) {
-        await this.msalInstance.loginRedirect(loginRequest);
-      } else {
-        const result = await this.msalInstance.loginPopup(loginRequest);
-        if (result.account) {
-          await this.handleLoginSuccess(result.account);
-        }
+      const options = this.getAzureOAuth2Options();
+      const result = await GenericOAuth2.authenticate(options);
+      const accessToken = result.access_token_response?.access_token || result.access_token;
+      if (!accessToken) {
+        throw new Error('Není k dispozici žádný přístupový token od poskytovatele OAuth2');
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Při přihlašování nastala chyba. Zkuste to znovu.');
-      this.router.navigate(['/home']);
-    }
-  }
 
-  private async handleLoginSuccess(account: AccountInfo) {
-    const email = account.username;
+      const response = await fetch('https://graph.microsoft.com/v1.0/me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    if (email) {
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Chyba Graph API: ${response.status} - ${response.statusText} - ${errorText}`);
+      }
+
+      const user = await response.json();
+      const email = user.mail || user.userPrincipalName;
+      if (!email) {
+        throw new Error('U uživatele nebyl nalezen žádný e-mail');
+      }
+
       const userSnapshot = await this.firestore
         .collection('users', (ref) => ref.where('email', '==', email))
         .get()
         .toPromise();
 
-      if (userSnapshot?.empty === false) {
-        const userDoc = userSnapshot.docs[0];
-        const userData = userDoc.data() as { class?: string };
-        const userClass = userData.class;
+      if (!userSnapshot || userSnapshot.empty) {
+        throw new Error('Uživatel nebyl nalezen v databázi');
+      }
 
-        this.userId = userDoc.id;
-        localStorage.setItem('userId', this.userId);
+      const userDoc = userSnapshot.docs[0];
+      const userData = userDoc.data() as { class?: string };
+      const userClass = userData.class;
 
-        if (userClass) {
-          localStorage.setItem('userClass', userClass);
-          this.router.navigate([`/notifications/${userClass}`]);
-        } else {
-          alert('U uživatele chybí třída(class), kontaktujte správce');
-          this.router.navigate(['/home']);
+      this.userId = userDoc.id;
+      localStorage.setItem('userId', this.userId);
+
+      if (userClass) {
+        localStorage.setItem('userClass', userClass);
+        console.log('Přesměrování na:', `/notifications/${userClass}`);
+        // Přidání krátkého zpoždění, aby byl WebView připraven
+        await new Promise(resolve => setTimeout(resolve, 100));
+        try {
+          await this.router.navigateByUrl(`/notifications/${userClass}`);
+          console.log('Přesměrování úspěšně dokončeno');
+        } catch (error) {
+          console.error('Chyba při přesměrování:', error);
+          throw new Error('Nepodařilo se přesměrovat na stránku oznámení');
         }
       } else {
-        alert('Uživatel nebyl nalezen v databázi');
-        this.router.navigate(['/home']);
+        throw new Error('U uživatele chybí informace o třídě, kontaktujte prosím administrátora');
       }
-    } else {
-      alert('Nebyl nalezen email, který by se shodoval s uživatelem.');
-      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Podrobnosti chyby při přihlášení:', error);
+      alert(`Při přihlášení došlo k chybě: ${error.message || error}. Zkuste to prosím znovu.`);
+      await this.router.navigateByUrl('/home');
     }
   }
 
@@ -128,9 +106,10 @@ export class AuthService {
       localStorage.removeItem('userId');
       localStorage.removeItem('userClass');
       localStorage.removeItem('msalAccount');
-      this.router.navigate(['/home']);
+      await this.router.navigateByUrl('/home');
+      console.log('Odhlášení úspěšně dokončeno');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Chyba při odhlášení:', error);
     }
   }
 

@@ -3,7 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
 import { ThemeService } from '../services/theme.service';
 import { isPlatform } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -12,22 +12,35 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements OnInit {
   isDarkMode = false;
+  private isNavigating = false;
 
   constructor(
     public authService: AuthService,
     private themeService: ThemeService,
     private notificationService: NotificationService,
     private router: Router
-  ) {}
+  ) {
+    // Listen for navigation events to prevent double navigation
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.isNavigating = true;
+      }
+    });
+  }
 
   ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
 
     const userId = this.authService.getUserId();
-    if (userId) {
+    if (userId && !this.isNavigating) {
       const userClass = localStorage.getItem('userClass');
       if (userClass) {
-        this.router.navigate([`/notifications/${userClass}`]);
+        console.log('HomePage: Navigating to /notifications/', userClass);
+        this.router.navigateByUrl(`/notifications/${userClass}`).then(success => {
+          console.log('HomePage navigation success:', success);
+        }).catch(error => {
+          console.error('HomePage navigation error:', error);
+        });
       } else {
         this.logout();
         console.log('Role uživatele nebyla nalezena v localStorage');

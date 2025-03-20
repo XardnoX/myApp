@@ -5,15 +5,25 @@ const config: CapacitorConfig = {
   appName: 'Pokladna',
   webDir: 'www',
   server: {
-    androidScheme: 'https',
+    androidScheme: 'capacitor',
+    iosScheme: 'capacitor',
     allowNavigation: [
-      'https://*.firebaseapp.com'
-    ]
+      'https://*.firebaseapp.com',
+    ],
+  },
+  android: {
+    allowMixedContent: true,
+    webContentsDebuggingEnabled: true,
   },
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+    GenericOAuth2: { 
+      androidScheme: 'capacitor',
+      androidHost: 'oauth2',
+      androidPath: '/callback'
+    }
   }
 };
 
