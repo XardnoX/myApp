@@ -3,6 +3,10 @@ import { Platform } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
+import { ThemeService } from './services/theme.service';
+import { NotificationService } from './services/notification.service';
+import { isPlatform } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -15,33 +19,22 @@ export class AppComponent implements OnInit {
 
   constructor(
     private platform: Platform,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService,
+    private notificationService: NotificationService,
+    private router: Router
   ) {
     this.initializeApp();
   }
 
   ngOnInit() {
-    if (Capacitor.isNativePlatform()) {
-      App.addListener('appUrlOpen', async (data) => {
-        if (data.url.includes('msauth://') && !this.isProcessingRedirect) {
-          this.isProcessingRedirect = true;
-          await this.authService.handleRedirectResult();
-          this.isProcessingRedirect = false;
-        }
-      }).catch(error => console.error(error));
-    }
+    // No need for appUrlOpen listener with generic-oauth2
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
       if (Capacitor.isNativePlatform()) {
-        App.addListener('appStateChange', async (state) => {
-          if (state.isActive && !this.isProcessingRedirect) {
-            this.isProcessingRedirect = true;
-            await this.authService.handleRedirectResult();
-            this.isProcessingRedirect = false;
-          }
-        }).catch(error => console.error(error));
+        // Any native-specific initialization
       }
     }).catch(error => console.error(error));
   }

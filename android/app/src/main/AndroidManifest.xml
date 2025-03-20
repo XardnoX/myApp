@@ -40,22 +40,19 @@
                     android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/__/auth/handler" />
             </intent-filter>
-       
         </activity>
 
         <activity
-            android:name="com.microsoft.identity.client.BrowserTabActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="msauth"
-                    android:host="io.ionic.com"
-                    android:path="/5mCAxrHN2386pwqP/GQEY2lIvnw=" />
-            </intent-filter>
-        </activity>
+    android:name="com.capacitorcommunity.generic_oauth2.GenericOauth2Activity"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="capacitor" android:host="oauth2" android:path="/callback" />
+    </intent-filter>
+</activity>
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -71,4 +68,5 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 </manifest>

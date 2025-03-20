@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { UserActionModalComponent } from './modals/user-action-modal/user-action-modal.component';
 import { Papa } from 'ngx-papaparse';
 import { AuthGuard } from './services/auth.guard';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { AuthGuard } from './services/auth.guard';
     WidgetsService,
     AuthGuard,
     Papa,
+    AuthService,
   ],
   bootstrap: [AppComponent],
 })
