@@ -24,6 +24,7 @@ import { AuthService } from './services/auth.service';
     AppComponent,
     WidgetUsersModalComponent,
     UserActionModalComponent,
+    
   ],
   imports: [
     BrowserModule,

@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
+            <!-- <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -39,13 +39,14 @@
                     android:scheme="https"
                     android:host="pokladna-b4647.firebaseapp.com"
                     android:path="/__/auth/handler" />
-            </intent-filter>
+            </intent-filter> -->
         </activity>
 
         <activity
             android:name="com.capacitorcommunity.generic_oauth2.GenericOauth2Activity"
             android:exported="true"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:label="Pokladna">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
