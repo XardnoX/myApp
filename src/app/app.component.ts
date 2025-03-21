@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // No need for appUrlOpen listener with generic-oauth2
+    this.handleRedirect();
   }
 
   initializeApp() {
@@ -37,6 +37,36 @@ export class AppComponent implements OnInit {
         // Any native-specific initialization
       }
     }).catch(error => console.error(error));
+  }
+
+  async handleRedirect() {
+    if (this.isProcessingRedirect) return;
+    this.isProcessingRedirect = true;
+
+    try {
+      const userId = this.authService.getUserId();
+      console.log('AppComponent: userId=', userId);
+
+      if (userId) {
+        const userClass = localStorage.getItem('userClass');
+        console.log('AppComponent: userClass=', userClass);
+        if (userClass) {
+          console.log('AppComponent: User is logged in, redirecting to /notifications/' + userClass);
+          await this.router.navigateByUrl(`/notifications/${userClass}`);
+        } else {
+          console.error('AppComponent: userClass not found, redirecting to /home');
+          await this.router.navigateByUrl('/home');
+        }
+      } else {
+        console.log('AppComponent: User is not logged in, redirecting to /home');
+        await this.router.navigateByUrl('/home');
+      }
+    } catch (error) {
+      console.error('AppComponent: Error during redirect:', error);
+      await this.router.navigateByUrl('/home');
+    } finally {
+      this.isProcessingRedirect = false;
+    }
   }
 
   toggleTheme() {
