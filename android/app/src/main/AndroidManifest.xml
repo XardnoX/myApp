@@ -30,29 +30,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <!-- <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="https"
-                    android:host="pokladna-b4647.firebaseapp.com"
-                    android:path="/__/auth/handler" />
-            </intent-filter> -->
-        </activity>
-
-        <activity
-            android:name="com.capacitorcommunity.generic_oauth2.GenericOauth2Activity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:label="Pokladna">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="capacitor" android:host="oauth2" android:pathPrefix="/callback" />
-            </intent-filter>
         </activity>
 
         <provider
@@ -69,5 +46,5 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 </manifest>

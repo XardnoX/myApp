@@ -37,9 +37,6 @@ export class NotificationsPage implements OnInit {
       this.userId = localStorage.getItem('userId');
       this.userClass = localStorage.getItem('userClass') ?? undefined;
 
-      console.log('User ID:', this.userId);
-      console.log('User Class:', this.userClass);
-
       if (!this.userId) {
         console.error('User ID nebylo nalezeno v localStorage.');
         this.router.navigate(['/home']);
@@ -76,7 +73,6 @@ export class NotificationsPage implements OnInit {
       .getWidgetsByClass(userClass)
       .subscribe(
         async (allWidgets: any[]) => {
-          console.log('Widgets fetched:', allWidgets);
 
           for (const widget of allWidgets) {
             await this.paidService.checkAndSetFullPaidOnce(widget.id);
@@ -170,7 +166,6 @@ export class NotificationsPage implements OnInit {
       await this.widgetsService.deleteWidgetRelations(widgetId);
 
       this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
-      console.log(`Akce ${widgetId} a relace spojené s ní byly smazány.`);
     } catch (error) {
       console.error('při mazání akce došlo k chybě:', error);
     }

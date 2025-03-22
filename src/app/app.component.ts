@@ -34,7 +34,6 @@ export class AppComponent implements OnInit {
   initializeApp() {
     this.platform.ready().then(() => {
       if (Capacitor.isNativePlatform()) {
-        // Any native-specific initialization
       }
     }).catch(error => console.error(error));
   }
@@ -45,24 +44,18 @@ export class AppComponent implements OnInit {
 
     try {
       const userId = this.authService.getUserId();
-      console.log('AppComponent: userId=', userId);
-
       if (userId) {
         const userClass = localStorage.getItem('userClass');
-        console.log('AppComponent: userClass=', userClass);
         if (userClass) {
-          console.log('AppComponent: User is logged in, redirecting to /notifications/' + userClass);
           await this.router.navigateByUrl(`/notifications/${userClass}`);
         } else {
-          console.error('AppComponent: userClass not found, redirecting to /home');
           await this.router.navigateByUrl('/home');
         }
       } else {
-        console.log('AppComponent: User is not logged in, redirecting to /home');
         await this.router.navigateByUrl('/home');
       }
     } catch (error) {
-      console.error('AppComponent: Error during redirect:', error);
+      console.error('Chyba při přesměrování:', error);
       await this.router.navigateByUrl('/home');
     } finally {
       this.isProcessingRedirect = false;

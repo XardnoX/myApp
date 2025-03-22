@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Pokladna',
   webDir: 'www',
   server: {
-    androidScheme: 'capacitor',
+    androidScheme: 'https',
     iosScheme: 'capacitor',
     allowNavigation: [
       'https://*.firebaseapp.com',
@@ -19,11 +19,7 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
-    GenericOAuth2: { 
-      androidScheme: 'capacitor',
-      androidHost: 'oauth2',
-      androidPath: '/callback'
-    }
+    
   }
 };
 
