@@ -26,6 +26,7 @@ export class AuthService {
       responseType: 'code',
       pkceEnabled: true,
       logsEnabled: true,
+      additionalParameters: { prompt: 'select_account' },
       android: {
         redirectUrl: 'capacitor://oauth2/callback',
       },
@@ -51,16 +52,9 @@ export class AuthService {
         },
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Chyba Graph API: ${response.status} - ${response.statusText} - ${errorText}`);
-      }
-
       const user = await response.json();
       const email = user.mail || user.userPrincipalName;
-      if (!email) {
-        throw new Error('U uživatele nebyl nalezen žádný e-mail');
-      }
+
 
       const userSnapshot = await this.firestore
         .collection('users', (ref) => ref.where('email', '==', email))
@@ -80,22 +74,18 @@ export class AuthService {
 
       if (userClass) {
         localStorage.setItem('userClass', userClass);
-        console.log('Přesměrování na:', `/notifications/${userClass}`);
-        // Přidání krátkého zpoždění, aby byl WebView připraven
         await new Promise(resolve => setTimeout(resolve, 100));
         try {
           await this.router.navigateByUrl(`/notifications/${userClass}`);
-          console.log('Přesměrování úspěšně dokončeno');
+
         } catch (error) {
-          console.error('Chyba při přesměrování:', error);
           throw new Error('Nepodařilo se přesměrovat na stránku oznámení');
         }
       } else {
         throw new Error('U uživatele chybí informace o třídě, kontaktujte prosím administrátora');
       }
-    } catch (error: any) {
-      console.error('Podrobnosti chyby při přihlášení:', error);
-      alert(`Při přihlášení došlo k chybě: ${error.message || error}. Zkuste to prosím znovu.`);
+    } catch  {
+      alert(`Při přihlášení došlo k chybě. Zkuste to prosím znovu.`);
       await this.router.navigateByUrl('/home');
     }
   }
@@ -107,7 +97,6 @@ export class AuthService {
       localStorage.removeItem('userClass');
       localStorage.removeItem('msalAccount');
       await this.router.navigateByUrl('/home');
-      console.log('Odhlášení úspěšně dokončeno');
     } catch (error) {
       console.error('Chyba při odhlášení:', error);
     }

@@ -2,8 +2,4 @@
 <resources>
     <string name="app_name">Pokladna</string>
     <string name="title_activity_main">Pokladna</string>
-    <string name="package_name">io.ionic.com</string>
-    <string name="custom_url_scheme">io.ionic.com</string>
-    <string name="azure_b2c_scheme">msauth</string>
-  <string name="azure_b2c_signature_hash">/5mCAxrHN2386pwqP/GQEY2lIvnw=</string>
 </resources>
