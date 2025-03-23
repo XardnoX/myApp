@@ -27,7 +27,7 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file(project.hasProperty("debugKeystoreStoreFile") ? project.property("debugKeystoreStoreFile") : "C:/User/ondra/.android/debug.keystore")
+            storeFile file(project.hasProperty("debugKeystoreStoreFile") ? project.property("debugKeystoreStoreFile") : "C:/Users/ondra/.android/debug.keystore")
             keyAlias project.hasProperty("debugKeystoreKeyAlias") ? project.property("debugKeystoreKeyAlias") : "androiddebugkey"
             storePassword project.hasProperty("debugKeystoreStorePassword") ? project.property("debugKeystoreStorePassword") : "android"
             keyPassword project.hasProperty("debugKeystoreKeyPassword") ? project.property("debugKeystoreKeyPassword") : "android"
