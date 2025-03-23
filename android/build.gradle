@@ -6,17 +6,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // ✅ Android Gradle Plugin (Ensure it matches your Gradle wrapper)
         classpath 'com.android.tools.build:gradle:8.7.2'
-
-        // ✅ Google Services Plugin (for Firebase)
         classpath 'com.google.gms:google-services:4.4.2'
-
-        // ✅ Firebase Crashlytics Plugin (if needed)
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
-
-        // ✅ Kotlin Gradle Plugin (if using Kotlin)
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20"
     }
 }
 
@@ -42,7 +35,6 @@ allprojects {
                 password System.getenv("ENV_VSTS_MVN_ANDROIDADAL_ACCESSTOKEN") != null ? System.getenv("ENV_VSTS_MVN_ANDROIDADAL_ACCESSTOKEN") : project.findProperty("vstsMavenAccessToken")
             }
         }
-        jcenter()
     }
 }
 

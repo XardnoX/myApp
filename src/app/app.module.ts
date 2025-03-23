@@ -18,6 +18,8 @@ import { UserActionModalComponent } from './modals/user-action-modal/user-action
 import { Papa } from 'ngx-papaparse';
 import { AuthGuard } from './services/auth.guard';
 import { AuthService } from './services/auth.service';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { AuthService } from './services/auth.service';
     AuthGuard,
     Papa,
     AuthService,
+    provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideFirestore(() => getFirestore()),
   ],
   bootstrap: [AppComponent],
 })

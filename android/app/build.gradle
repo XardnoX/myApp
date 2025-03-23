@@ -1,4 +1,7 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'com.google.gms.google-services' apply false
+}
 
 android {
     namespace "io.ionic.com"
@@ -20,13 +23,34 @@ android {
     buildFeatures {
         viewBinding true
         dataBinding true
-    }   
-    buildTypes {
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file(project.hasProperty("debugKeystoreStoreFile") ? project.property("debugKeystoreStoreFile") : "C:/User/ondra/.android/debug.keystore")
+            keyAlias project.hasProperty("debugKeystoreKeyAlias") ? project.property("debugKeystoreKeyAlias") : "androiddebugkey"
+            storePassword project.hasProperty("debugKeystoreStorePassword") ? project.property("debugKeystoreStorePassword") : "android"
+            keyPassword project.hasProperty("debugKeystoreKeyPassword") ? project.property("debugKeystoreKeyPassword") : "android"
+        }
         release {
+            storeFile file(project.hasProperty("releaseKeystoreStoreFile") ? project.property("releaseKeystoreStoreFile") : "release.keystore")
+            keyAlias project.hasProperty("releaseKeystoreKeyAlias") ? project.property("releaseKeystoreKeyAlias") : "releasekey"
+            storePassword project.hasProperty("releaseKeystoreStorePassword") ? project.property("releaseKeystoreStorePassword") : "oauhkn"
+            keyPassword project.hasProperty("releaseKeystoreKeyPassword") ? project.property("releaseKeystoreKeyPassword") : "oauhkn"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     lint {
         baseline = file("lint-baseline.xml")
     }
@@ -42,21 +66,22 @@ dependencies {
     implementation project(':capacitor-android')
     implementation project(':capacitor-cordova-android-plugins')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.appcompat:appcompat:1.7.0"
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.2.0"
     implementation "androidx.core:core-splashscreen:1.0.1"
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.6'
     implementation 'com.google.android.gms:play-services-wallet:19.4.0'
     testImplementation "junit:junit:4.13.2"
-    androidTestImplementation "androidx.test.ext:junit:1.1.5"
-    androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
-    implementation("com.microsoft.identity.client:msal:4.10.0") {
+    androidTestImplementation "androidx.test.ext:junit:1.2.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"
+    implementation 'com.google.firebase:firebase-messaging:24.0.0'
+    implementation("com.microsoft.identity.client:msal:5.1.0") {
         exclude(group: "io.opentelemetry")
         exclude(group: 'com.microsoft.device.display')
     }
-    implementation("io.opentelemetry:opentelemetry-api:1.18.0")
-    implementation("io.opentelemetry:opentelemetry-context:1.18.0")
+    implementation("io.opentelemetry:opentelemetry-api:1.34.1")
+    implementation("io.opentelemetry:opentelemetry-context:1.34.1")
 }
 
 apply from: 'capacitor.build.gradle'

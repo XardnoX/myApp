@@ -43,7 +43,7 @@ export class AuthService {
       const result = await GenericOAuth2.authenticate(options);
       const accessToken = result.access_token_response?.access_token || result.access_token;
       if (!accessToken) {
-        throw new Error('Není k dispozici žádný přístupový token od poskytovatele OAuth2');
+        throw new Error('Není k dispozici žádný token k přihlášení');
       }
 
       const response = await fetch('https://graph.microsoft.com/v1.0/me', {
@@ -62,7 +62,7 @@ export class AuthService {
         .toPromise();
 
       if (!userSnapshot || userSnapshot.empty) {
-        throw new Error('Uživatel nebyl nalezen v databázi');
+        throw alert('Uživatel nebyl nalezen v databázi');
       }
 
       const userDoc = userSnapshot.docs[0];
