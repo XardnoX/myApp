@@ -1,16 +1,55 @@
 import { Injectable } from '@angular/core';
-import { PushNotifications, Token } from '@capacitor/push-notifications';
+import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
+import { AuthService } from './auth.service';
+import { FirestoreService } from './firestore.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor() {}
+  private listenersInitialized = false;
+
+  constructor(
+    private authService: AuthService,
+    private firestoreService: FirestoreService
+  ) {}
 
   private isSupportedPlatform(): boolean {
     const platform = Capacitor.getPlatform();
+    console.log('Aktuální platforma:', platform);
     return platform === 'android' || platform === 'ios';
+  }
+
+  async requestNotificationPermissions(): Promise<boolean> {
+    if (!this.isSupportedPlatform()) {
+      console.log('Upozornění nejsou na této platformě podporována.');
+      return false;
+    }
+
+    try {
+      const permissionStatus = await PushNotifications.checkPermissions();
+      if (permissionStatus.receive === 'prompt') {
+        const result = await PushNotifications.requestPermissions();
+        if (result.receive !== 'granted') {
+          return false;
+        }
+      } else if (permissionStatus.receive === 'denied') {
+        return false;
+      }
+
+      await PushNotifications.register();
+
+      if (!this.listenersInitialized) {
+        this.setupPushNotificationListeners();
+        this.listenersInitialized = true;
+      }
+
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      return false;
+    }
   }
 
   async getFCMToken(): Promise<string | null> {
@@ -19,64 +58,93 @@ export class NotificationService {
     }
 
     try {
-      const permissionStatus = await PushNotifications.requestPermissions();
+      const permissionStatus = await PushNotifications.checkPermissions();
       if (permissionStatus.receive === 'granted') {
         await PushNotifications.register();
 
         return new Promise((resolve, reject) => {
-          PushNotifications.addListener('registration', (token: Token) => {
-            console.log('FCM Token:', token.value);
-            resolve(token.value);
-          });
+          let registrationListener: any;
+          let errorListener: any;
 
-          PushNotifications.addListener('registrationError', (error: any) => {
-            console.error('Chyba registrace upozornění:', error);
-            reject(null);
-          });
+          registrationListener = PushNotifications.addListener(
+            'registration',
+            (token: Token) => {
+              console.log('FCM token získán:', token.value);
+              const userId = this.authService.getUserId();
+              if (userId) {
+                this.firestoreService
+                  .addFCMTokenToUser(userId, token.value)
+                  .then(() => {
+                    resolve(token.value);
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+              } else {
+                resolve(token.value);
+              }
+              registrationListener.remove();
+              errorListener.remove();
+            }
+          );
+
+          errorListener = PushNotifications.addListener(
+            'registrationError',
+            (error: any) => {
+              console.error(error);
+              reject(error);
+              registrationListener.remove();
+              errorListener.remove();
+            }
+          );
+
+          setTimeout(() => {
+            registrationListener.remove();
+            errorListener.remove();
+          }, 10000);
         });
       } else {
         return null;
       }
-    } catch (error) {
-      console.error('Chyba při získávání FCM token:', error);
+    } catch (error: any) {
+      console.error(error);
       return null;
     }
   }
 
-  async requestNotificationPermissions() {
-    if (!this.isSupportedPlatform()) {
-      return;
-    }
+  private setupPushNotificationListeners() {
+    PushNotifications.addListener('registration', (token: Token) => {
+      const userId = this.authService.getUserId();
+      if (userId) {
+        this.firestoreService.addFCMTokenToUser(userId, token.value)   
+      }
+    });
 
-    try {
-      const permissionStatus = await PushNotifications.requestPermissions();
-      if (permissionStatus.receive === 'granted') {
-        await PushNotifications.register();
+    PushNotifications.addListener('registrationError', (error: any) => {
+      console.error('Registrace pro upozornění selhala:', error);
+      
+    });
 
-        PushNotifications.addListener('registration', (token) => {
-          console.log('FCM Token:', token.value);
-        });
+    PushNotifications.addListener(
+      'pushNotificationReceived',
+      (notification: PushNotificationSchema) => {
+        this.handleNotificationReceived(notification);
+      }
+    );
 
-        PushNotifications.addListener('registrationError', (error) => {
-          console.error('Chyba registrace upozornění:', error);
-        });
-      } 
-    } catch (error) {
-      console.error('Chyba při získávání povolení pro upozornění:', error);
-    }
+    PushNotifications.addListener(
+      'pushNotificationActionPerformed',
+      (action: ActionPerformed) => {
+        this.handleNotificationAction(action);
+      }
+    );
   }
 
-  listenForMessages() {
-    if (!this.isSupportedPlatform()) {
-      return;
-    }
+  private handleNotificationReceived(notification: PushNotificationSchema) {
+    const { title, body } = notification;
+  }
 
-    PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Povolení pro upozornění bylo získano:', notification);
-    });
-
-    PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      console.log(action);
-    });
+  private handleNotificationAction(action: ActionPerformed) {
+    const { actionId, notification } = action;
   }
 }

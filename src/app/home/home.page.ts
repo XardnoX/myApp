@@ -20,7 +20,6 @@ export class HomePage implements OnInit {
     private notificationService: NotificationService,
     private router: Router
   ) {
-    // Listen for navigation events to prevent double navigation
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.isNavigating = true;
@@ -28,41 +27,49 @@ export class HomePage implements OnInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
 
     const userId = this.authService.getUserId();
     if (userId && !this.isNavigating) {
+      await this.setupNotifications();
+
       const userClass = localStorage.getItem('userClass');
       if (userClass) {
-        console.log('HomePage: Navigating to /notifications/', userClass);
-        this.router.navigateByUrl(`/notifications/${userClass}`).then(success => {
-          console.log('HomePage navigation success:', success);
-        }).catch(error => {
-          console.error('HomePage navigation error:', error);
-        });
+        this.router.navigateByUrl(`/notifications/${userClass}`);
       } else {
         this.logout();
         console.log('Role uživatele nebyla nalezena v localStorage');
       }
     }
-
-    if (isPlatform('android') || isPlatform('ios')) {
-      this.notificationService.requestNotificationPermissions();
-      this.notificationService.listenForMessages();
-    }
   }
+
+  private async setupNotifications() {
+    if (isPlatform('android') || isPlatform('ios')) {
+      const permissionsGranted = await this.notificationService.requestNotificationPermissions();
+      if (permissionsGranted) {
+        const token = await this.notificationService.getFCMToken();
+        if (token) {
+          console.log('FCM token uložen', token);
+        } 
+  }
+}}
 
   toggleTheme() {
     this.themeService.toggleTheme();
     this.isDarkMode = this.themeService.isDark();
   }
 
-  login() {
-    this.authService.loginWithMicrosoft();
+  async login() {
+    await this.authService.loginWithMicrosoft();
+    const userId = this.authService.getUserId();
+    if (userId) {
+      await this.setupNotifications();
+    } 
   }
 
   logout() {
     this.authService.logout();
+  
   }
 }
