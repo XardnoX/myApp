@@ -81,9 +81,7 @@ export class AuthService {
         } catch (error) {
           throw new Error('Nepodařilo se přesměrovat na stránku oznámení');
         }
-      } else {
-        throw new Error('U uživatele chybí informace o třídě, kontaktujte prosím administrátora');
-      }
+      } 
     } catch  {
       alert(`Při přihlášení došlo k chybě. Zkuste to prosím znovu.`);
       await this.router.navigateByUrl('/home');
@@ -95,7 +93,6 @@ export class AuthService {
       this.userId = null;
       localStorage.removeItem('userId');
       localStorage.removeItem('userClass');
-      localStorage.removeItem('msalAccount');
       await this.router.navigateByUrl('/home');
     } catch (error) {
       console.error('Chyba při odhlášení:', error);

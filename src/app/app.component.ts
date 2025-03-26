@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   isDarkMode = false;
-  private isProcessingRedirect = false;
 
   constructor(
     private platform: Platform,
@@ -41,9 +40,6 @@ export class AppComponent implements OnInit {
   }
 
   async handleRedirect() {
-    if (this.isProcessingRedirect) return;
-    this.isProcessingRedirect = true;
-
     try {
       const userId = this.authService.getUserId();
       if (userId) {
@@ -59,9 +55,7 @@ export class AppComponent implements OnInit {
     } catch (error) {
       console.error('Chyba při přesměrování:', error);
       await this.router.navigateByUrl('/home');
-    } finally {
-      this.isProcessingRedirect = false;
-    }
+    } 
   }
 
   toggleTheme() {

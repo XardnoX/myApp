@@ -90,7 +90,7 @@ export class UploadCsvPage implements OnInit {
       if (roleSnapshot) {
         roleSnapshot.forEach(doc => {
           const roleName = doc.get('name') as string;
-          this.roleMap[roleName] = doc.ref.path;
+          this.roleMap[roleName] = `/${doc.ref.path}`;
         });
       }
     } catch (error) {
@@ -184,7 +184,7 @@ export class UploadCsvPage implements OnInit {
 
         const roleHasUserRef = this.firestore.collection('role_has_user').doc().ref;
         roleHasUserBatch.set(roleHasUserRef, {
-          user_id: userRef.path,
+          user_id: `/${userRef.path}`,
           role_id: roleId,
         });
       } else if (row.type === 'notification') {

@@ -29,19 +29,6 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
-
-    const userId = this.authService.getUserId();
-    if (userId && !this.isNavigating) {
-      await this.setupNotifications();
-
-      const userClass = localStorage.getItem('userClass');
-      if (userClass) {
-        this.router.navigateByUrl(`/notifications/${userClass}`);
-      } else {
-        this.logout();
-        console.log('Role uživatele nebyla nalezena v localStorage');
-      }
-    }
   }
 
   private async setupNotifications() {
