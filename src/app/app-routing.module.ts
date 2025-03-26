@@ -27,8 +27,13 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'upload-csv',
+    path: `upload-csv`,
     loadChildren: () => import('./upload-csv/upload-csv.module').then(m => m.UploadCsvPageModule),
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'delete-users',
+    loadChildren: () => import('./delete-users/delete-users.module').then( m => m.DeleteUsersPageModule),
     canActivate: [AuthGuard],
   },
   {

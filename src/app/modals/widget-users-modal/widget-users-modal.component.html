@@ -15,8 +15,8 @@
       <ion-col>Dluh</ion-col>
     </ion-row>
 
-    <ion-row *ngFor="let user of users">
-      <ion-col class="email" class="email" (click)="openUserActionModal(user)">{{ user.email }}</ion-col>
+    <ion-row *ngFor="let user of users" (click)="openUserActionModal(user)">
+      <ion-col class="email">{{ user.email }}</ion-col>
       <ion-col
         class="small-text"
         [style.background-color]="user.paid ? '#006600' : '#790000'"
