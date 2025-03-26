@@ -27,7 +27,7 @@ export class WidgetsService {
         return null;
       }
     } catch (error) {
-      console.error('Cyba při načítání spojených akcí s uživatelem', error);
+      console.error('Chyba při načítání spojených akcí s uživatelem', error);
       return null;
     }
   }

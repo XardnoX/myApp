@@ -1,16 +1,12 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title class="center-title">Oznámení pro třídu: {{userClass}}</ion-title>
+    <ion-title class="center-title">Oznámení pro třídu: {{currentClass}}</ion-title>
     
     <ion-buttons slot="end">
       <ion-button (click)="toggleTheme()">
-        <ion-icon
-          slot="icon-only"
-          [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'">
-        </ion-icon>
+        <ion-icon slot="icon-only" [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'"></ion-icon>
       </ion-button>
-      <ion-button (click)="toggleMenu()">
-        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      <ion-button (click)="toggleMenu()"><ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -23,11 +19,7 @@
         <strong>  {{ widget.name }} </strong>
         <div class="top-right-section">
           <span class="end-date">{{ widget.end | date: 'd. M. yyyy' }}</span>
-          <ion-progress-bar
-          [value]="widget.progress"
-          [color]="widget.progressColor"
-          class="small-progress-bar"
-          ></ion-progress-bar>
+          <ion-progress-bar [value]="widget.progress" [color]="widget.progressColor" class="small-progress-bar"></ion-progress-bar>
           <p class="date"><strong>Zbývá:</strong> {{ widget.daysRemaining }} dní</p>
         </div>
       </ion-card-title>
@@ -43,13 +35,7 @@
       <p><strong>Kompletně Zaplaceno:</strong> {{ widget.full_paid ? 'Ano' : 'Ne' }}</p>
       <div class="bottom-right">
         <!-- rozhraní-admina -->
-        <ion-button
-        color="danger"
-        fill="outline"
-        (click)="deleteWidget(widget.id); $event.stopPropagation()"
-        >
-          Smazat
-        </ion-button>
+        <ion-button color="danger" fill="outline" (click)="deleteWidget(widget.id); $event.stopPropagation()">Smazat</ion-button>
       </div>
     </ion-card-content>
   </ion-card>

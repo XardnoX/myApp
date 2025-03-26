@@ -4,7 +4,7 @@ import { PaidService } from '../services/paid.service';
 import { WidgetUsersModalComponent } from '../modals/widget-users-modal/widget-users-modal.component';
 import { AuthService } from '../services/auth.service';
 import { WidgetsService } from '../services/widgets.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ThemeService } from '../services/theme.service';
 
@@ -15,11 +15,12 @@ import { ThemeService } from '../services/theme.service';
 })
 export class NotificationsPage implements OnInit {
   widgets: any[] = [];
-  userClass: string | undefined;
+  currentClass: string | null = null;
   userId: string | null = null;
   isDarkMode = false;
 
   constructor(
+    private route: ActivatedRoute,
     private modalController: ModalController,
     private paidService: PaidService,
     private authService: AuthService,
@@ -35,7 +36,12 @@ export class NotificationsPage implements OnInit {
     this.isDarkMode = this.themeService.isDark();
     try {
       this.userId = localStorage.getItem('userId');
-      this.userClass = localStorage.getItem('userClass') ?? undefined;
+      this.currentClass = this.route.snapshot.paramMap.get('class');
+      if (!this.currentClass) {
+        console.error('Taková třída nebyla nalezena.');
+        this.router.navigate(['/home']);
+        return;
+      }
 
       if (!this.userId) {
         console.error('User ID nebylo nalezeno v localStorage.');
@@ -43,13 +49,7 @@ export class NotificationsPage implements OnInit {
         return;
       }
 
-      if (!this.userClass) {
-        console.error('User class nebyla nalezena v localStorage.');
-        this.router.navigate(['/home']);
-        return;
-      }
-
-      await this.loadWidgetsForClass(this.userClass);
+      await this.loadWidgetsForClass(this.currentClass);
     } catch (error) {
       this.router.navigate(['/home']);
     }
