@@ -16,7 +16,7 @@ export class UploadCsvPage implements OnInit {
   selectedFile: File | null = null;
   uploadMessage: string | null = null;
   uploadMessageType: string = 'primary';
-  userFormat: string = 'type, class, email, first_name, last_name (user, 2021B, novak_filip@oauh.cz, Filip, Novák)';
+  userFormat: string = 'type, class, email, role, first_name, last_name (user, 2021B, novak_filip@oauh.cz, admin, Filip, Novák)';
   notificationFormat: string = 'type, class (notification, 2021B)';
   private roleMap: { [key: string]: string } = {};
   userClass: string | undefined;
@@ -32,26 +32,25 @@ export class UploadCsvPage implements OnInit {
     public router: Router,
     authService: AuthService,
     modalController: ModalController,
-    private themeService: ThemeService,
-
+    private themeService: ThemeService
   ) {
     this.authService = authService;
     this.modalController = modalController;
   }
 
-  async ngOnInit() {  
+  async ngOnInit() {
     this.isDarkMode = this.themeService.isDark();
     try {
       this.userId = localStorage.getItem('userId');
       this.userClass = localStorage.getItem('userClass') ?? undefined;
 
       if (!this.userId) {
-        console.error('User ID nebylo nalezeno localStorage');
+        console.error('User ID nebylo nalezeno v localStorage');
         return;
       }
 
       if (!this.userClass) {
-        console.error('User class nebyla nalezena localStorage');
+        console.error('User class nebyla nalezena v localStorage');
         return;
       }
 
@@ -64,14 +63,16 @@ export class UploadCsvPage implements OnInit {
   toggleMenu() {
     this.menuController.toggle('upload-menu');
   }
-  
+
   closeMenu() {
     this.menuController.close('upload-menu');
   }
+
   toggleTheme() {
     this.themeService.toggleTheme();
     this.isDarkMode = this.themeService.isDark();
   }
+
   logout() {
     this.authService.logout();
   }
@@ -161,12 +162,13 @@ export class UploadCsvPage implements OnInit {
     for (const row of data) {
       if (row.type === 'user') {
         if (!row.class || !row.email) {
-          throw new Error('Chybí povinné pole class, email v řádku: ' + JSON.stringify(row));
+          throw new Error('Chybí povinné pole class nebo email v řádku: ' + JSON.stringify(row));
         }
 
         const userData = {
           class: row.class,
           email: row.email,
+          role: row.role || 'user', 
           first_name: row.first_name,
           last_name: row.last_name,
           credit: 0,
@@ -175,9 +177,12 @@ export class UploadCsvPage implements OnInit {
         const userRef = this.firestore.collection('users').doc().ref;
         usersBatch.set(userRef, userData);
 
-        const roleName = 'user';
-        const roleId = this.roleMap[roleName];
+        let roleName = userData.role.toLowerCase();
+        if (!['user', 'admin', 'classteacher', 'classcasher'].includes(roleName)) {
+          roleName = 'user';
+        }
 
+        const roleId = this.roleMap[roleName];
         if (!roleId) {
           throw new Error(`Role "${roleName}" nebyla nalezena v databázi`);
         }
