@@ -75,16 +75,25 @@ export class NotificationsPage implements OnInit {
         async (allWidgets: any[]) => {
 
           for (const widget of allWidgets) {
-            await this.paidService.checkAndSetFullPaidOnce(widget.id);
+            await this.paidService.checkAndSetFullPaid(widget.id);
           }
 
           if (this.userId) {
             this.widgets = await this.mergeUserWidgetData(allWidgets);
-            this.cdr.detectChanges();
-            this.widgets.sort((a, b) => Number(a.paid) - Number(b.paid));
+            this.widgets.sort((a, b) => {
+              const paidComparison = Number(a.paid) - Number(b.paid);
+              if (paidComparison !== 0) {
+                return paidComparison;
+              }
+              if (!a.paid && !b.paid) {
+                return a.daysRemaining - b.daysRemaining;
+              }
+              return b.end.getTime() - a.end.getTime();
+          });
+              this.cdr.detectChanges();
           }
         },
-        (error) => {
+        (error: any) => {
           console.error('Chyba při načítání akcí', error);
         }
       );
@@ -167,7 +176,7 @@ export class NotificationsPage implements OnInit {
 
       this.widgets = this.widgets.filter((widget) => widget.id !== widgetId);
     } catch (error) {
-      console.error('při mazání akce došlo k chybě:', error);
+      alert('při mazání akce došlo k chybě:' + error);
     }
   }
 
@@ -181,7 +190,6 @@ export class NotificationsPage implements OnInit {
       componentProps: { widgetId },
     });
     await modal.present();
-    console.log('WidgetUsersModal presented');
   }
 
   getProgress(startDate: string, endDate: string): number {

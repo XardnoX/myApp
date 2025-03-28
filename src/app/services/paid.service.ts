@@ -21,24 +21,24 @@ export class PaidService {
       .snapshotChanges()
       .pipe(
         map((changes) =>
-          changes.map((c) => {
-            const data = c.payload.doc.data() as {
-              user_id: string;
-              paid: boolean;
-              owe: boolean;
-            };
-            const id = c.payload.doc.id;
+        changes.map((c) => {
+          const data = c.payload.doc.data() as {
+            user_id: string;
+            paid: boolean;
+            owe: boolean;
+          };
+          const id = c.payload.doc.id;
   
-            return {
-              id,
+          return {
+            id,
               ...data,
             };
           })
         ),
-        switchMap((userWidgetRelations) => {
-          const userRequests = userWidgetRelations.map((relation) => {
-            const userId = relation.user_id.replace('/users/', '');
-            return this.firestore
+  switchMap((userWidgetRelations) => {
+        const userRequests = userWidgetRelations.map((relation) => {
+              const userId = relation.user_id.replace('/users/', '');
+              return this.firestore
               .doc<{ email: string }>(`users/${userId}`)
               .valueChanges()
               .pipe(
@@ -46,21 +46,19 @@ export class PaidService {
                   ...relation,
                   email: user?.email || 'Unknown', 
                 }))
-              );
-          });
-  
-          return combineLatest(userRequests.length ? userRequests : [of([])]);
+            );
+        });
+      return combineLatest(userRequests.length ? userRequests : [of([])]);
         })
       );
   }
 
   
-  checkAndSetFullPaidOnce(widgetId: string): Promise<void> {
+  checkAndSetFullPaid(widgetId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.getUsersForWidget(widgetId).subscribe(
         (userWidgets) => {
           const allPaid = userWidgets.every((userWidget) => userWidget.paid === true);
-  
           this.firestore
             .doc(`widgets/${widgetId}`)
             .get()
@@ -84,20 +82,16 @@ export class PaidService {
                 } else {
                   resolve();
                 }
-              } else {
-                console.error(`Widget ${widgetId} does not exist.`);
-                resolve();
-              }
+              } 
             });
         },
-        (error) => {
+        (error) => { 
           console.error(`Chyba při načítání relací pro ${widgetId}:`, error);
           reject(error);
         }
       );
     });
   }
- 
         
 getWidgetsByClass(userClass: string): Observable<any[]> {
   return this.firestore.collection('widgets', (ref) =>

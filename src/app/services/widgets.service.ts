@@ -27,7 +27,7 @@ export class WidgetsService {
         return null;
       }
     } catch (error) {
-      alert('Chyba při načítání spojených akcí s uživatelem' + error);
+      console.error('Chyba při načítání spojených akcí s uživatelem' + error);
       return null;
     }
   }
@@ -36,7 +36,7 @@ export class WidgetsService {
       return this.firestore
         .doc(`widgets/${widgetId}`)
         .delete()
-        .catch((error) => alert('Chyba při mazání akce:' + error));
+        .catch((error) => console.error('Chyba při mazání akce:' + error));
     }
   
     async deleteWidgetRelations(widgetId: string): Promise<void> {
