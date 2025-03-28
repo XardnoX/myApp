@@ -1,13 +1,85 @@
-<ion-header [translucent]="true">
+<!--Tahle stránka je pouze pro administrátora-->
+<ion-header>
   <ion-toolbar>
-    <ion-title>delete-users</ion-title>
+    <ion-title>Smazat uživatele a třídy</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleTheme()">
+        <ion-icon
+          slot="icon-only"
+          [name]="isDarkMode ? 'sunny-outline' : 'moon-outline'">
+        </ion-icon>
+      </ion-button>
+      <ion-button (click)="toggleMenu()">
+        <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Smazat uživatele</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-searchbar placeholder="Hledat podle emailu" [(ngModel)]="userSearchQuery" (ionInput)="filterUsers()"></ion-searchbar>
+
+      <ion-list>
+        <ion-item *ngFor="let user of filteredUsers">
+          <ion-label>{{ user.email }} ({{ user.first_name }} {{ user.last_name }})</ion-label>
+          <ion-checkbox slot="end" [checked]="selectedUsers.has(user.id)" (ionChange)="toggleUserSelection(user.id)"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+      
+      <ion-button expand="block" color="danger" (click)="deleteSelectedUsers()" [disabled]="selectedUsers.size === 0">Smazat uživatele</ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Smazat třídu</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-searchbar placeholder="Hledat třídu" [(ngModel)]="classSearchQuery" (ionInput)="filterClasses()"></ion-searchbar>
+
+      <ion-list>
+        <ion-item *ngFor="let cls of filteredClasses">
+          <ion-label>{{ cls }}</ion-label>
+          <ion-checkbox slot="end" [checked]="selectedClasses.has(cls)" (ionChange)="toggleClassSelection(cls)"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" color="danger" (click)="deleteSelectedClasses()" [disabled]="selectedClasses.size === 0">Smazat třídu</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-menu side="end" content-id="main-content" menuId="delete-users-menu" type="overlay">
+  <ion-header>
     <ion-toolbar>
-      <ion-title size="large">delete-users</ion-title>
+      <ion-title>Menu</ion-title>
     </ion-toolbar>
   </ion-header>
-</ion-content>
+  <ion-content>
+    <ion-list>
+      <ion-item button (click)="router.navigate(['/notifications', userClass]); closeMenu()">
+        <ion-icon slot="start" name="notifications-outline"></ion-icon>
+        <ion-label>Notifikace</ion-label>
+      </ion-item>
+      <!-- rozhraní-učitele -->
+      <ion-item button (click)="router.navigate(['/add-widget']); closeMenu()">
+        <ion-icon slot="start" name="add-outline"></ion-icon>
+        <ion-label>Přidat akci</ion-label>
+      </ion-item>
+      <!-- rozhraní-admina -->
+      <ion-item button (click)="router.navigate(['/upload-csv']); closeMenu()">
+        <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+        <ion-label>Správa databáze</ion-label>
+      </ion-item>
+      <ion-item button (click)="logout(); closeMenu()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        <ion-label>Odhlásit</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
