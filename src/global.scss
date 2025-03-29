@@ -26,40 +26,44 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 /**
-* Ionic Dark Mode
-* -----------------------------------------------------
-* For more info, please see:
-* https://ionicframework.com/docs/theming/dark-mode
-*/
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
-
-/* Body styling */
 body {
-  background-color: var(--background-color);
+  background-color: var(--background-color) !important;
   color: var(--text-color);
 }
+ion-list-header {
+  background-color: var(--background-color);
+}
+ion-col {
+  color: var(--text-color);
+}
+ion-datetime {
+  background-color: var(--form-color);
+}
+ion-content {
+  --background: var(--background-color) !important;
+}
 
-/* Toolbar styling */
 ion-toolbar {
   --background: var(--ion-toolbar-background);
   --color: var(--ion-toolbar-color);
-  border: none; /* Removes toolbar borders */
+  border: none;
 }
 
-/* Title styling */
 ion-title {
   color: var(--ion-toolbar-color);
 }
 
-/* Card styling */
 ion-card {
   background-color: var(--card-color);
   color: var(--text-color);
-  border-radius: 8px; /* Rounded corners for cards */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 ion-card-title {
@@ -67,15 +71,13 @@ ion-card-title {
   font-weight: bold;
 }
 
-/* Progress bar styling */
 ion-progress-bar {
-  --progress-background: #e0e0e0; /* Background of the progress bar */
-  --progress-color: var(--progress-bar-color); /* Color of the progress */
-  height: 6px; /* Custom height for progress bar */
+  --progress-background: #e0e0e0;
+  --progress-color: var(--progress-bar-color);
+  height: 6px;
   border-radius: 3px;
 }
 
-/* Button styling */
 ion-button {
   --color: var(--text-color);
   --border-color: var(--button-outline-color);
@@ -83,7 +85,6 @@ ion-button {
   border-radius: 4px;
 }
 
-/* Menu styling */
 ion-menu {
   --background: var(--menu-background-color);
   --color: var(--menu-item-text-color);
@@ -91,29 +92,26 @@ ion-menu {
 
 ion-header {
   --background: var(--menu-background-color);
-  border: none; /* Removes border in menu header */
+  border: none;
 }
 
 ion-toolbar {
   --background: var(--menu-background-color);
   --color: var(--menu-item-text-color);
-  border: none; /* Removes toolbar borders in the menu */
+  border: none;
 }
 
 ion-item {
   --background: var(--menu-item-background-color);
   --color: var(--menu-item-text-color);
-  border: none; /* Removes borders around menu items */
+  border: none;
 }
 
-/* Icon Styling */
 ion-icon {
   color: var(--icon-color);
 }
 
-/* Utility Classes */
 .widget-color {
-  background-color: var(--progress-bar-color); /* Example color for widgets */
+  background-color: var(--progress-bar-color);
   color: var(--text-color);
 }
-
