@@ -115,8 +115,6 @@ export class AddWidgetPage {
       });
 
       await batch.commit();
-
-      console.log('akce a vztahy mezi uživateli a akcemi byly přidány úspěšně.');
       alert('akce a vztahy mezi uživateli a akcemi byly přidány úspěšně.');
 
       this.resetFormFields();

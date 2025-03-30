@@ -29,7 +29,7 @@ export class WidgetUsersModalComponent implements OnInit {
         this.users = users;
       },
       (error) => {
-        console.error('Chyba při spojování uživatelů a akcí', error);
+        console.error('Chyba při nacházení uživatelů spojených s touhle akcí', error);
       }
     );
   }

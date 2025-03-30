@@ -30,33 +30,17 @@
 
     <ion-item>
       <ion-label position="stacked">Cena</ion-label>
-      <ion-input
-        type="number"
-        [(ngModel)]="widgetPrice"
-        name="widgetPrice"
-        placeholder="povinné"
-        required
-      ></ion-input>
+      <ion-input type="number" [(ngModel)]="widgetPrice" name="widgetPrice" placeholder="povinné" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Začátek</ion-label>
-      <ion-datetime
-        [(ngModel)]="startDate"
-        name="startDate"
-        presentation="date"
-        required
-      ></ion-datetime>
+      <ion-datetime [(ngModel)]="startDate" name="startDate" presentation="date" required></ion-datetime>
     </ion-item>
 
     <ion-item>
       <ion-label position="stacked">Konec</ion-label>
-      <ion-datetime
-        [(ngModel)]="endDate"
-        name="endDate"
-        presentation="date"
-        required
-      ></ion-datetime>
+      <ion-datetime [(ngModel)]="endDate" name="endDate" presentation="date" required></ion-datetime>
     </ion-item>
 
     <ion-button expand="block" type="submit">Vytvořit Widget</ion-button>

@@ -61,7 +61,7 @@ export class UserActionModalComponent {
       console.log(
         `Updated user widget ${userWidgetId} with paid: ${paid}, owe: ${owe}`
       );
-      this.dismissModal();
+      this.modalController.dismiss();
     } catch (error) {
       console.error('Error updating payment status:', error);
     }
