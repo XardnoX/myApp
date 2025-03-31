@@ -93,8 +93,7 @@ export class AddWidgetPage {
         price: this.widgetPrice,
         start: formattedStart,
         end: formattedEnd,
-        class: userClass,
-        full_paid: false
+        class: userClass
       });
 
       console.log('Akce vytvořena s ID:', widgetDoc.id);
@@ -111,6 +110,7 @@ export class AddWidgetPage {
           widget_id: `/widgets/${widgetDoc.id}`,
           paid: false,
           owe: false,
+          belong: true
         });
       });
 

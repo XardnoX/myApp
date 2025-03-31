@@ -7,6 +7,7 @@ import { WidgetsService } from '../services/widgets.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ThemeService } from '../services/theme.service';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-notifications',
@@ -71,16 +72,11 @@ export class NotificationsPage implements OnInit {
   async loadWidgetsForClass(userClass: string) {
     this.paidService
       .getWidgetsByClass(userClass)
-      .subscribe(
-        async (allWidgets: any[]) => {
-
-          for (const widget of allWidgets) {
-            await this.paidService.checkAndSetFullPaid(widget.id);
-          }
-
+      .pipe(
+        switchMap(async (allWidgets: any[]) => {
           if (this.userId) {
-            this.widgets = await this.mergeUserWidgetData(allWidgets);
-            this.widgets.sort((a, b) => {
+            const widgets = await this.mergeUserWidgetData(allWidgets);
+            widgets.sort((a, b) => {
               const paidComparison = Number(a.paid) - Number(b.paid);
               if (paidComparison !== 0) {
                 return paidComparison;
@@ -89,14 +85,21 @@ export class NotificationsPage implements OnInit {
                 return a.daysRemaining - b.daysRemaining;
               }
               return b.end.getTime() - a.end.getTime();
-          });
-              this.cdr.detectChanges();
+            });
+            return widgets;
           }
+          return [];
+        })
+      )
+      .subscribe({
+        next: (widgets) => {
+          this.widgets = widgets;
+          this.cdr.detectChanges();
         },
-        (error: any) => {
+        error: (error) => {
           console.error('Chyba při načítání akcí', error);
         }
-      );
+      });
   }
 
   async mergeUserWidgetData(widgets: any[]): Promise<any[]> {
@@ -129,6 +132,7 @@ export class NotificationsPage implements OnInit {
               ...widget,
               paid: userWidgetData?.paid ?? false,
               owe: userWidgetData?.owe ?? false,
+              full_paid: widget.full_paid,
               start,
               end,
               progress,
@@ -140,6 +144,7 @@ export class NotificationsPage implements OnInit {
               ...widget,
               paid: false,
               owe: false,
+              full_paid: widget.full_paid,
               progress: 0,
               progressColor: 'success',
               daysRemaining: 0,
@@ -159,6 +164,7 @@ export class NotificationsPage implements OnInit {
         ...widget,
         paid: false,
         owe: false,
+        full_paid: widget.full_paid,
         progress: 0,
         progressColor: 'success',
         daysRemaining: 0,

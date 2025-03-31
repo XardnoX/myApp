@@ -28,6 +28,10 @@
         </ion-item>
       </ion-radio-group>
     </ion-list>
+    <ion-item>
+      <ion-label>Uživatel patří do akce:</ion-label>
+      <ion-checkbox [(ngModel)]="belong"></ion-checkbox>
+    </ion-item>
     <div class="button-container">
       <ion-button expand="block" (click)="applyChanges()">POTVRDIT</ion-button>
       <ion-button expand="block" color="dark" (click)="dismissModal()">ZRUŠIT</ion-button>
